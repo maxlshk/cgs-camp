@@ -1,9 +1,3 @@
-// TODO: Put a real types here
-
-// export type TodoType = {
-// 	data: string;
-// };
-
 import Joi from 'joi';
 
 export const todoSchema = Joi.object({

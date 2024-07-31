@@ -12,19 +12,23 @@ todosRouter.get('/all', tryCatch(todoController.getAllTodos));
 
 todosRouter.get('/:id', isExist('todo'), tryCatch(todoController.getTodoById));
 
-todosRouter.post('/', validateBody(todoSchema), tryCatch(todoController.createTodo));
+todosRouter.post(
+	'/',
+	validateBody(todoSchema),
+	tryCatch(todoController.createTodo),
+);
 
-todosRouter.put('/:id', isExist('todo'), validateBody(todoSchema), tryCatch(todoController.updateTodo));
+todosRouter.put(
+	'/:id',
+	isExist('todo'),
+	validateBody(todoSchema),
+	tryCatch(todoController.updateTodo),
+);
 
-todosRouter.delete('/:id', isExist('todo'), tryCatch(todoController.deleteTodo));
+todosRouter.delete(
+	'/:id',
+	isExist('todo'),
+	tryCatch(todoController.deleteTodo),
+);
 
 export default todosRouter;
-// import { Router } from 'express';
-
-// import todoController from '../../controllers/todo.controller';
-
-// const todosRouter: Router = Router();
-
-// todosRouter.get('/all', todoController.getAllTodo.bind(todoController));
-
-// export default todosRouter;

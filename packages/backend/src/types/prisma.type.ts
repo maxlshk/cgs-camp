@@ -1,4 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 
-export type PrismaModelType<T extends keyof PrismaClient> =
-    PrismaClient[T] extends PrismaClient<infer U> ? U : never;
+export type PrismaModelDelegate = {
+	[K in keyof PrismaClient]: PrismaClient[K] extends {
+		findUnique: (args: { where: { id: number } }) => Promise<unknown>;
+	}
+		? PrismaClient[K]
+		: never;
+};
