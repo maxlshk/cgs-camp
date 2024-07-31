@@ -3,11 +3,13 @@ import 'dotenv/config';
 import bodyParser from 'body-parser';
 
 import AppRouter from './routes';
+import cors from 'cors';
 
 const port = 3030;
 const app: Express = express();
 const router = new AppRouter(app);
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
