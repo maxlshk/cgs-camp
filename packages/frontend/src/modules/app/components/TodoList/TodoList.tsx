@@ -1,13 +1,13 @@
 import React from 'react';
-import { TodoElement } from '../todo/todo.component';
-import { useTodoStore } from '../../../store/todo.store';
+import { TodoElement } from '../TodoItem/TodoItem';
+import { useTodoStore } from '../../../../store/todo.store';
 import {
 	emptyStateStyles,
 	headerStyles,
 	listStyles,
 	sliderStyles,
 	tableStyles,
-} from './todo.list.styles';
+} from './TodoList.styles';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
 

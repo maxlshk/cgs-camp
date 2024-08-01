@@ -42,6 +42,9 @@
 			],
 			"~/*": [
 				"src/*"
+			],
+			"~pages/*": [
+				"src/modules/pages/*"
 			]
 		}
 	},

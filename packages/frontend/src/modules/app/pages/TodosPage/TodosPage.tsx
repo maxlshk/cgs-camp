@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { TodoList } from '../list/todo.list.component';
+import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { ButtonGroup, Button } from '@blueprintjs/core';
-import { buttonGroup } from './todo.container.styles';
+import { buttonGroup } from './TodosPage.styles';
 
 enum TodoFilter {
 	ALL = 'ALL',
@@ -11,7 +11,7 @@ enum TodoFilter {
 	COMPLETED = 'COMPLETED',
 }
 
-export const TodoContainer: React.FC = () => {
+export const TodosPage: React.FC = () => {
 	const { fetchTodos, isLoading, error } = useTodoStore();
 	const [filter, setFilter] = React.useState<TodoFilter>(TodoFilter.ALL);
 

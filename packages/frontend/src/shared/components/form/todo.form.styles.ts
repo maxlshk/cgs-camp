@@ -51,17 +51,6 @@ export const checkboxContainerStyles = css`
 	margin-bottom: ${THEME.SPACING.MEDIUM};
 `;
 
-export const labelStyles = css`
-	display: flex;
-	align-items: center;
-	font-size: ${THEME.FONT_SIZES.MEDIUM};
-	color: ${COLORS.TEXT};
-`;
-
-export const checkboxStyles = css`
-	margin-right: ${THEME.SPACING.SMALL};
-`;
-
 export const buttonStyles = css`
 	width: 100%;
 	padding: ${THEME.SPACING.MEDIUM};

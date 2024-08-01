@@ -5,31 +5,26 @@
 // export const privateRoutes = <>// PRIVATE_ROUTES</>;
 
 import React from 'react';
-import { TodoContainer } from '../shared/components/container/todo.container.component.tsx';
-import { TodoForm } from '~shared/components/form/todo.form.component.js';
-
-export const ROUTER_KEYS = {
-	HOME: '/',
-	TODO: '/todo',
-	NEW: '/todo/new',
-	EDIT: '/todo/edit/:id',
-};
+import { EditTodoForm } from '~modules/app/pages/EditTodoPage/EditTodoPage';
+import { NewTodoPage } from '~modules/app/pages/NewTodoPage/NewTodoPage';
+import { TodosPage } from '~modules/app/pages/TodosPage/TodosPage';
+import { ROUTER_KEYS } from '~shared/keys';
 
 export const routes = [
 	{
-		path: ROUTER_KEYS.HOME,
+		path: ROUTER_KEYS.ALL_MATCH,
 		element: <div>Home Page</div>,
 	},
 	{
 		path: ROUTER_KEYS.TODO,
-		element: <TodoContainer />,
+		element: <TodosPage />,
 	},
 	{
 		path: ROUTER_KEYS.NEW,
-		element: <TodoForm />,
+		element: <NewTodoPage />,
 	},
 	{
 		path: ROUTER_KEYS.EDIT,
-		element: <TodoForm />,
+		element: <EditTodoForm />,
 	},
 ];
