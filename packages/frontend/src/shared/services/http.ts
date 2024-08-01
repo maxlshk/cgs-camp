@@ -16,7 +16,7 @@ export const addTodo = async (todo: Omit<Todo, 'id'>): Promise<Todo> => {
 
 export const updateTodo = async (
 	id: number,
-	updates: Partial<Todo>,
+	updates: Partial<Omit<Todo, 'id'>>,
 ): Promise<Todo> => {
 	const response = await axios.put(`${API_URL}/todos/${id}`, updates);
 	return response.data;
