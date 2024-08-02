@@ -44,7 +44,7 @@
 				"src/*"
 			],
 			"~pages/*": [
-				"src/modules/pages/*"
+				"src/modules/app/pages/*"
 			]
 		}
 	},
