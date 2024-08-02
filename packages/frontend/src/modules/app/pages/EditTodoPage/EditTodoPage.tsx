@@ -3,10 +3,9 @@ import { useForm } from 'react-hook-form';
 import { Form, FormData } from '~shared/components/form/form.component';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTodoStore } from '~store/todo.store';
-import { Input } from '~shared/components/input/input.component';
-import { TextArea } from '~shared/components/textarea/textarea.component';
+import { TextInput } from '~shared/components/textinput/textinput.component';
 import { CheckBox } from '~shared/components/checkbox/checkbox.component';
-import { checkboxContainerStyles } from './EditTodoPage.style';
+import { checkboxContainerStyles } from '../NewTodoPage/NewTodoPage.styles';
 
 export const EditTodoForm: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -29,18 +28,20 @@ export const EditTodoForm: React.FC = () => {
 			onSubmit={onSubmit}
 			title={'Create new todo'}
 		>
-			<Input
+			<TextInput
 				name="title"
 				register={register}
 				placeholder="Title"
 				defaultValue={todo.title}
+				type="input"
 				required
 			/>
-			<TextArea
+			<TextInput
 				name="description"
 				register={register}
 				placeholder="Description"
 				defaultValue={todo.description}
+				type="textarea"
 				required
 			/>
 			<div className={checkboxContainerStyles}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TodoElement } from '../TodoItem/TodoItem';
-import { useTodoStore } from '../../../../store/todo.store';
+import { useTodoStore } from '~store/todo.store';
 import {
 	emptyStateStyles,
 	headerStyles,

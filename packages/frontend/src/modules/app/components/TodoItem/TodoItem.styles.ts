@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { THEME, COLORS } from '../../../../shared/styles/constants';
+import { THEME, COLORS } from '~shared/styles/constants';
 
 export const todoElementStyles = css`
 	@media (min-width: ${THEME.BREAKPOINTS.DESKTOP}) {

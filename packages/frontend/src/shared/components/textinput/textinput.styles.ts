@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { THEME, COLORS } from '../../../shared/styles/constants';
+import { THEME, COLORS } from '../../styles/constants';
 
 export const inputStyles = css`
 	width: 100%;
@@ -12,4 +12,10 @@ export const inputStyles = css`
 		outline: none;
 		border-color: ${COLORS.PRIMARY};
 	}
+`;
+
+export const textareaStyles = css`
+	${inputStyles}
+	min-height: 100px;
+	resize: vertical;
 `;

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Todo } from '../../../../shared/services/types';
-import { useTodoStore } from '../../../../store/todo.store';
+import { Todo } from '~shared/services/types';
+import { useTodoStore } from '~store/todo.store';
 import { cardStyles, listItemStyles, tableRowStyles } from './TodoItem.styles';
 import { Button, Switch, Intent } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';

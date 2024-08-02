@@ -3,8 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Form, FormData } from '~shared/components/form/form.component';
 import { useNavigate } from 'react-router-dom';
 import { useTodoStore } from '~store/todo.store';
-import { Input } from '~shared/components/input/input.component';
-import { TextArea } from '~shared/components/textarea/textarea.component';
+import { TextInput } from '~shared/components/textinput/textinput.component';
 import { CheckBox } from '~shared/components/checkbox/checkbox.component';
 import { checkboxContainerStyles } from './NewTodoPage.styles';
 
@@ -25,16 +24,18 @@ export const NewTodoPage: React.FC = () => {
 			onSubmit={onSubmit}
 			title={'Create new todo'}
 		>
-			<Input
+			<TextInput
 				name="title"
 				register={register}
 				placeholder="Title"
+				type="input"
 				required
 			/>
-			<TextArea
+			<TextInput
 				name="description"
 				register={register}
 				placeholder="Description"
+				type="textarea"
 				required
 			/>
 			<div className={checkboxContainerStyles}>

@@ -1,4 +1,4 @@
-import { FONTS, COLORS, THEME } from '../../shared/styles/constants';
+import { FONTS, COLORS, THEME } from '~shared/styles/constants';
 import { css } from '@emotion/css';
 
 export const globalStyles = css`
