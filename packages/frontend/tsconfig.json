@@ -45,6 +45,9 @@
 			],
 			"~pages/*": [
 				"src/modules/pages/*"
+			],
+			"~types/*": [
+				"src/shared/types/*"
 			]
 		}
 	},

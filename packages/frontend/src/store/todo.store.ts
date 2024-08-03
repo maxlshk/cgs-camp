@@ -1,11 +1,6 @@
 import { create } from 'zustand';
-import { Todo } from '../shared/services/types';
-import {
-	addTodo,
-	getTodos,
-	updateTodo,
-	deleteTodo,
-} from '../shared/services/http';
+import { Todo } from '../shared/types/types';
+import { todoService } from '~shared/services/todo.service';
 
 interface TodoState {
 	todos: Todo[];
@@ -24,7 +19,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 	fetchTodos: async (): Promise<void> => {
 		set({ isLoading: true });
 		try {
-			const todos = await getTodos();
+			const todos = await todoService.getTodos();
 			set({ todos, isLoading: false });
 		} catch (error) {
 			set({ error: 'Failed to fetch todos', isLoading: false });
@@ -32,7 +27,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 	},
 	addTodo: async (todo: Omit<Todo, 'id'>): Promise<void> => {
 		try {
-			const newTodo = await addTodo(todo);
+			const newTodo = await todoService.addTodo(todo);
 			set((state) => ({ todos: [...state.todos, newTodo] }));
 		} catch (error) {
 			set({ error: 'Failed to add todo' });
@@ -40,7 +35,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 	},
 	updateTodo: async (id: number, updates: Partial<Todo>): Promise<void> => {
 		try {
-			const updatedTodo = await updateTodo(id, updates);
+			const updatedTodo = await todoService.updateTodo(id, updates);
 			set((state) => ({
 				todos: state.todos.map((todo) =>
 					todo.id === id ? updatedTodo : todo,
@@ -52,7 +47,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 	},
 	deleteTodo: async (id: number): Promise<void> => {
 		try {
-			await deleteTodo(id);
+			await todoService.deleteTodo(id);
 			set((state) => ({
 				todos: state.todos.filter((todo) => todo.id !== id),
 			}));

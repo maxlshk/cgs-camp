@@ -1,6 +1,10 @@
 import React from 'react';
-import { inputStyles, textareaStyles } from './textinput.styles';
-import { UseFormRegister } from 'react-hook-form/dist/types';
+import {
+	inputStyles,
+	textareaStyles,
+	errorMessageStyles,
+} from './textinput.styles';
+import { UseFormRegister, FieldError } from 'react-hook-form';
 import { FormData } from '../form/form.component';
 
 interface FormFieldProps {
@@ -11,6 +15,9 @@ interface FormFieldProps {
 	required: boolean;
 	type?: 'input' | 'textarea';
 	inputType?: string;
+	error?: FieldError;
+	minLength?: number;
+	maxLength?: number;
 }
 
 export const TextInput: React.FC<FormFieldProps> = ({
@@ -21,17 +28,41 @@ export const TextInput: React.FC<FormFieldProps> = ({
 	required,
 	type = 'input',
 	inputType = 'text',
+	error,
+	minLength,
+	maxLength,
 }) => {
 	const sharedProps = {
 		className: type === 'input' ? inputStyles : textareaStyles,
-		...register(`${name}`, { required: required }),
+		...register(`${name}`, {
+			required: required ? 'This field is required' : false,
+			minLength: minLength
+				? {
+						value: minLength,
+						message: `Minimum length is ${minLength} characters`,
+					}
+				: undefined,
+			maxLength: maxLength
+				? {
+						value: maxLength,
+						message: `Maximum length is ${maxLength} characters`,
+					}
+				: undefined,
+		}),
 		placeholder,
 		defaultValue: defaultValue || '',
 	};
 
-	if (type === 'textarea') {
-		return <textarea {...sharedProps} />;
-	}
-
-	return <input type={inputType} {...sharedProps} />;
+	return (
+		<div>
+			{type === 'textarea' ? (
+				<textarea {...sharedProps} />
+			) : (
+				<input type={inputType} {...sharedProps} />
+			)}
+			{error && (
+				<span className={errorMessageStyles}>{error.message}</span>
+			)}
+		</div>
+	);
 };

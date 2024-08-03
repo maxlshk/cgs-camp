@@ -65,3 +65,10 @@ export const buttonStyles = css`
 		background-color: ${COLORS.SECONDARY};
 	}
 `;
+
+export const errorMessageStyles = css`
+	color: red;
+	font-size: 14px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+`;

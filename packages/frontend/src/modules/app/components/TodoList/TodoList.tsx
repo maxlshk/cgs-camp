@@ -10,6 +10,8 @@ import {
 } from './TodoList.styles';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
+import { FILTER_TYPES } from '~shared/keys';
+import { Todo, ViewType } from '~types/types';
 
 interface TodoListProps {
 	filter: string;
@@ -31,51 +33,41 @@ export const TodoList: React.FC<TodoListProps> = ({ filter }) => {
 			</div>
 		);
 	}
-	const filteredTodos = todos.filter((todo) => {
-		if (filter === 'ALL') {
-			return true;
-		}
-		if (filter === 'PRIVATE') {
-			return !todo.public;
-		}
-		if (filter === 'PUBLIC') {
-			return todo.public;
-		}
-		if (filter === 'COMPLETED') {
-			return todo.completed;
-		}
-		return true;
-	});
 
-	if (isDesktop) {
-		return (
-			<div className={tableStyles}>
+	const filterFunctions: Record<FILTER_TYPES, (todo: Todo) => boolean> = {
+		[FILTER_TYPES.ALL]: () => true,
+		[FILTER_TYPES.PRIVATE]: (todo) => !todo.public,
+		[FILTER_TYPES.PUBLIC]: (todo) => todo.public,
+		[FILTER_TYPES.COMPLETED]: (todo) => todo.completed,
+	};
+
+	const filteredTodos = todos.filter(filterFunctions[filter]);
+
+	const viewStyles: Record<ViewType, string> = {
+		table: tableStyles,
+		card: sliderStyles,
+		list: listStyles,
+	};
+
+	const getViewType = (): ViewType => {
+		if (isDesktop) return 'table';
+		if (isTablet) return 'card';
+		return 'list';
+	};
+
+	const viewType = getViewType();
+
+	return (
+		<div className={viewStyles[viewType]}>
+			{viewType === 'table' && (
 				<div className={headerStyles}>
 					<span>Title</span>
 					<span>Description</span>
 					<span>Actions</span>
 				</div>
-				{filteredTodos.map((todo) => (
-					<TodoElement key={todo.id} todo={todo} view="table" />
-				))}
-			</div>
-		);
-	}
-
-	if (isTablet) {
-		return (
-			<div className={sliderStyles}>
-				{filteredTodos.map((todo) => (
-					<TodoElement key={todo.id} todo={todo} view="card" />
-				))}
-			</div>
-		);
-	}
-
-	return (
-		<div className={listStyles}>
+			)}
 			{filteredTodos.map((todo) => (
-				<TodoElement key={todo.id} todo={todo} view="list" />
+				<TodoElement key={todo.id} todo={todo} view={viewType} />
 			))}
 		</div>
 	);

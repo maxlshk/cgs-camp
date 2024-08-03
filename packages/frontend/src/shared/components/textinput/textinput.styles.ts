@@ -19,3 +19,9 @@ export const textareaStyles = css`
 	min-height: 100px;
 	resize: vertical;
 `;
+
+export const errorMessageStyles = css`
+	color: red;
+	font-size: 12px;
+	margin-top: 4px;
+`;
