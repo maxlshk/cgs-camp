@@ -97,34 +97,6 @@ export const getUserById = async (userId: number): Promise<User> => {
 	return user;
 };
 
-export const changePassword = async (
-	userId: number,
-	currentPassword: string,
-	newPassword: string,
-): Promise<User> => {
-	const user = await prisma.user.findUnique({ where: { id: userId } });
-
-	if (!user) {
-		throw new Error('User not found');
-	}
-
-	const isPasswordValid = await bcrypt.compare(
-		currentPassword,
-		user.password,
-	);
-
-	if (!isPasswordValid) {
-		throw new Error('Invalid current password');
-	}
-
-	const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-	return prisma.user.update({
-		where: { id: userId },
-		data: { password: hashedNewPassword },
-	});
-};
-
 export const forgotPassword = async (email: string): Promise<void> => {
 	const user = await prisma.user.findUnique({ where: { email } });
 
@@ -170,5 +142,43 @@ export const resetPassword = async (
 			resetPasswordToken: null,
 			resetPasswordTokenExpires: null,
 		},
+	});
+};
+
+export const changePassword = async (
+	userId: number,
+	currentPassword: string,
+	newPassword: string,
+): Promise<User> => {
+	const user = await prisma.user.findUnique({ where: { id: userId } });
+
+	if (!user) {
+		throw new Error('User not found');
+	}
+
+	const isPasswordValid = await bcrypt.compare(
+		currentPassword,
+		user.password,
+	);
+
+	if (!isPasswordValid) {
+		throw new Error('Invalid current password');
+	}
+
+	const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+	return prisma.user.update({
+		where: { id: userId },
+		data: { password: hashedNewPassword },
+	});
+};
+
+export const editProfile = async (
+	userId: number,
+	name: string,
+): Promise<User> => {
+	return prisma.user.update({
+		where: { id: userId },
+		data: { name: name },
 	});
 };

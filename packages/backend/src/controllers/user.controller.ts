@@ -68,6 +68,19 @@ export const verifyAccount = async (
 	}
 };
 
+export const getProfile = async (
+	req: Request,
+	res: Response,
+): Promise<void> => {
+	try {
+		const userId = (req.user as { id: number }).id;
+		const user = await userService.getUserById(userId);
+		res.json(user);
+	} catch (error) {
+		res.status(400).json({ message: (error as Error).message });
+	}
+};
+
 export const forgotPassword = async (
 	req: Request,
 	res: Response,
@@ -103,6 +116,20 @@ export const changePassword = async (
 		const { currentPassword, newPassword } = req.body;
 		await userService.changePassword(userId, currentPassword, newPassword);
 		res.json({ message: 'Password changed successfully' });
+	} catch (error) {
+		res.status(400).json({ message: (error as Error).message });
+	}
+};
+
+export const editProfile = async (
+	req: Request,
+	res: Response,
+): Promise<void> => {
+	try {
+		const userId = (req.user as { id: number }).id;
+		const { name } = req.body;
+		await userService.editProfile(userId, name);
+		res.json({ message: 'Profile updated successfully' });
 	} catch (error) {
 		res.status(400).json({ message: (error as Error).message });
 	}
