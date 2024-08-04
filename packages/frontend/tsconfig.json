@@ -44,7 +44,10 @@
 				"src/*"
 			],
 			"~pages/*": [
-				"src/modules/app/pages/*"
+				"src/modules/pages/*"
+			],
+			"~types/*": [
+				"src/shared/types/*"
 			]
 		}
 	},

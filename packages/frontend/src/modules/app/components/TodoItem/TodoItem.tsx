@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { Todo } from '~shared/services/types';
+import { Todo, ViewType } from '~types/types';
 import { useTodoStore } from '~store/todo.store';
 import { cardStyles, listItemStyles, tableRowStyles } from './TodoItem.styles';
 import { Button, Switch, Intent } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
+import { ROUTER_KEYS } from '~shared/keys';
 
 interface TodoElementProps {
 	todo: Todo;
-	view: 'table' | 'card' | 'list';
+	view: ViewType;
 }
 
 export const TodoElement: React.FC<TodoElementProps> = ({ todo, view }) => {
@@ -22,7 +23,7 @@ export const TodoElement: React.FC<TodoElementProps> = ({ todo, view }) => {
 	const handleDelete = (): Promise<void> => deleteTodo(todo.id);
 
 	const handleEdit = (): void => {
-		navigator(`/todos/edit/${todo.id}`);
+		navigator(ROUTER_KEYS.EDIT.replace(':id', todo.id.toString()));
 	};
 
 	const renderActions = (): React.JSX.Element => (

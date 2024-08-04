@@ -3,17 +3,11 @@ import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { ButtonGroup, Button } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
-
-enum TodoFilter {
-	ALL = 'ALL',
-	PRIVATE = 'PRIVATE',
-	PUBLIC = 'PUBLIC',
-	COMPLETED = 'COMPLETED',
-}
+import { FILTER_TYPES } from '~shared/keys';
 
 export const TodosPage: React.FC = () => {
 	const { fetchTodos, isLoading, error } = useTodoStore();
-	const [filter, setFilter] = React.useState<TodoFilter>(TodoFilter.ALL);
+	const [filter, setFilter] = React.useState<FILTER_TYPES>(FILTER_TYPES.ALL);
 
 	useEffect(() => {
 		fetchTodos();
@@ -32,29 +26,29 @@ export const TodosPage: React.FC = () => {
 			<ButtonGroup large className={buttonGroup}>
 				<Button
 					icon="globe"
-					onClick={() => setFilter(TodoFilter.ALL)}
-					active={filter === TodoFilter.ALL}
+					onClick={() => setFilter(FILTER_TYPES.ALL)}
+					active={filter === FILTER_TYPES.ALL}
 				>
 					All
 				</Button>
 				<Button
 					icon="person"
-					onClick={() => setFilter(TodoFilter.PRIVATE)}
-					active={filter === TodoFilter.PRIVATE}
+					onClick={() => setFilter(FILTER_TYPES.PRIVATE)}
+					active={filter === FILTER_TYPES.PRIVATE}
 				>
 					Private
 				</Button>
 				<Button
 					icon="people"
-					onClick={() => setFilter(TodoFilter.PUBLIC)}
-					active={filter === TodoFilter.PUBLIC}
+					onClick={() => setFilter(FILTER_TYPES.PUBLIC)}
+					active={filter === FILTER_TYPES.PUBLIC}
 				>
 					Public
 				</Button>
 				<Button
 					icon="tick"
-					onClick={() => setFilter(TodoFilter.COMPLETED)}
-					active={filter === TodoFilter.COMPLETED}
+					onClick={() => setFilter(FILTER_TYPES.COMPLETED)}
+					active={filter === FILTER_TYPES.COMPLETED}
 				>
 					Completed
 				</Button>
