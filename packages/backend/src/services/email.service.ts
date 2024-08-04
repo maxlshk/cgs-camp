@@ -22,7 +22,7 @@ export const sendVerificationEmail = async (
 		html: `
       <h1>Account Verification</h1>
       <p>Please click the link below to verify your account:</p>
-      <a href="${process.env.BASE_URL}api/user/verify/${token}">Verify Account</a>
+      <a href="${process.env.VERIFICATION_URL}/${token}">Verify Account</a>
     `,
 	};
 
@@ -46,7 +46,7 @@ export const sendPasswordResetEmail = async (
 		html: `
       <h1>Password Reset</h1>
       <p>You have requested to reset your password. Please click the link below to set a new password:</p>
-      <a href="${process.env.BASE_URL}api/user/reset-password/${token}">Reset Password</a>
+      <a href="${process.env.PASSWORD_RESET_URL}/${token}">Reset Password</a>
       <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
     `,
 	};

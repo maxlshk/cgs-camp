@@ -31,10 +31,40 @@ passport.use(
 	}),
 );
 
-export const generateToken = (user: User): string => {
-	return jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-		expiresIn: '1d',
-	});
+export const generateTokens = (
+	user: User,
+): { accessToken: string; refreshToken: string } => {
+	const accessToken = jwt.sign(
+		{ id: user.id },
+		process.env.JWT_SECRET as string,
+		{ expiresIn: '15m' },
+	);
+	const refreshToken = jwt.sign(
+		{ id: user.id },
+		process.env.REFRESH_TOKEN_SECRET as string,
+		{ expiresIn: '7d' },
+	);
+	return { accessToken, refreshToken };
+};
+
+export const verifyRefreshToken = async (
+	refreshToken: string,
+): Promise<number> => {
+	try {
+		const payload = jwt.verify(
+			refreshToken,
+			process.env.REFRESH_TOKEN_SECRET as string,
+		) as { id: number };
+		const user = await prisma.user.findUnique({
+			where: { id: payload.id },
+		});
+		if (!user || user.refreshToken !== refreshToken) {
+			throw new Error('Invalid refresh token');
+		}
+		return user.id;
+	} catch (error) {
+		throw new Error('Invalid refresh token');
+	}
 };
 
 export const authenticateJwt = (

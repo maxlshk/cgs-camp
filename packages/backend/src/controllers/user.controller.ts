@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
-import { generateToken } from '../middleware/auth.middleware';
+import {
+	generateTokens,
+	verifyRefreshToken,
+} from '../middleware/auth.middleware';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -18,10 +21,37 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { email, password } = req.body;
 		const user = await userService.loginUser(email, password);
-		const token = generateToken(user);
-		res.json({ token });
+		const { accessToken, refreshToken } = generateTokens(user);
+		await userService.saveRefreshToken(user.id, refreshToken);
+		res.json({ accessToken, refreshToken });
 	} catch (error) {
 		res.status(401).json({ message: (error as Error).message });
+	}
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const userId = (req.user as { id: number }).id;
+		await userService.logoutUser(userId);
+		res.json({ message: 'User logged out successfully' });
+	} catch (error) {
+		res.status(400).json({ message: (error as Error).message });
+	}
+};
+
+export const refreshToken = async (
+	req: Request,
+	res: Response,
+): Promise<void> => {
+	try {
+		const { refreshToken } = req.body;
+		const userId = await verifyRefreshToken(refreshToken);
+		const user = await userService.getUserById(userId);
+		const tokens = generateTokens(user);
+		await userService.saveRefreshToken(user.id, tokens.refreshToken);
+		res.json(tokens);
+	} catch (error) {
+		res.status(401).json({ message: 'Invalid refresh token' });
 	}
 };
 

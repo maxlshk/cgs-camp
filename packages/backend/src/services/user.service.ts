@@ -11,25 +11,30 @@ export const createUser = async (
 		| 'id'
 		| 'isVerified'
 		| 'refreshToken'
+		| 'refreshTokenExpires'
 		| 'verificationToken'
 		| 'resetPasswordToken'
-		| 'resetPassowrdTokenExpires'
+		| 'resetPasswordTokenExpires'
 	>,
 ): Promise<User> => {
 	const hashedPassword = await bcrypt.hash(userData.password, 10);
 	const verificationToken = crypto.randomBytes(32).toString('hex');
 
-	const user = await prisma.user.create({
-		data: {
-			...userData,
-			password: hashedPassword,
-			verificationToken,
-		},
-	});
+	try {
+		const user = await prisma.user.create({
+			data: {
+				...userData,
+				password: hashedPassword,
+				verificationToken,
+			},
+		});
+		await sendVerificationEmail(user.email, verificationToken);
 
-	await sendVerificationEmail(user.email, verificationToken);
-
-	return user;
+		return user;
+	} catch (error) {
+		console.error('Error creating user:', error);
+		throw new Error('Failed to create user');
+	}
 };
 
 export const verifyUser = async (token: string): Promise<User> => {
@@ -63,6 +68,32 @@ export const loginUser = async (
 		throw new Error('Invalid credentials');
 	}
 
+	return user;
+};
+
+export const logoutUser = async (userId: number): Promise<void> => {
+	await prisma.user.update({
+		where: { id: userId },
+		data: { refreshToken: null, refreshTokenExpires: null },
+	});
+};
+
+export const saveRefreshToken = async (
+	userId: number,
+	refreshToken: string,
+): Promise<void> => {
+	const refreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+	await prisma.user.update({
+		where: { id: userId },
+		data: { refreshToken, refreshTokenExpires },
+	});
+};
+
+export const getUserById = async (userId: number): Promise<User> => {
+	const user = await prisma.user.findUnique({ where: { id: userId } });
+	if (!user) {
+		throw new Error('User not found');
+	}
 	return user;
 };
 
@@ -102,13 +133,13 @@ export const forgotPassword = async (email: string): Promise<void> => {
 	}
 
 	const resetToken = crypto.randomBytes(32).toString('hex');
-	const resetTokenExpires = new Date(Date.now() + 3600000); // 1 hour from now
+	const resetTokenExpires = new Date(Date.now() + 3600000);
 
 	await prisma.user.update({
 		where: { id: user.id },
 		data: {
 			resetPasswordToken: resetToken,
-			resetPassowrdTokenExpires: resetTokenExpires,
+			resetPasswordTokenExpires: resetTokenExpires,
 		},
 	});
 
@@ -122,7 +153,7 @@ export const resetPassword = async (
 	const user = await prisma.user.findFirst({
 		where: {
 			resetPasswordToken: token,
-			resetPassowrdTokenExpires: { gt: new Date() },
+			resetPasswordTokenExpires: { gt: new Date() },
 		},
 	});
 
@@ -137,39 +168,7 @@ export const resetPassword = async (
 		data: {
 			password: hashedNewPassword,
 			resetPasswordToken: null,
-			resetPassowrdTokenExpires: null,
+			resetPasswordTokenExpires: null,
 		},
 	});
 };
-
-// const sendVerificationEmail = async (
-// 	email: string,
-// 	token: string,
-// ): Promise<void> => {
-// 	const transporter = nodemailer.createTransport({
-// 		// Configure your email service here
-// 	});
-
-// 	await transporter.sendMail({
-// 		from: process.env.EMAIL_FROM,
-// 		to: email,
-// 		subject: 'Verify your account',
-// 		html: `Click <a href="${process.env.BASE_URL}/verify/${token}">here</a> to verify your account.`,
-// 	});
-// };
-
-// const sendPasswordResetEmail = async (
-// 	email: string,
-// 	token: string,
-// ): Promise<void> => {
-// 	const transporter = nodemailer.createTransport({
-// 		// Configure your email service here
-// 	});
-
-// 	await transporter.sendMail({
-// 		from: process.env.EMAIL_FROM,
-// 		to: email,
-// 		subject: 'Reset your password',
-// 		html: `Click <a href="${process.env.BASE_URL}/reset-password/${token}">here</a> to reset your password.`,
-// 	});
-// };

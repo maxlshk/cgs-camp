@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id                          Int     @id @default(autoincrement())
-  email                       String  @unique
-  name                        String?
-  password                    String
-  todos                       Todo[]
-  refreshToken                String?
-  verificationToken           String?
-  isVerified                  Boolean   @default(false)
-  resetPasswordToken          String?   @unique
-  resetPassowrdTokenExpires   DateTime?
+  id                        Int       @id @default(autoincrement())
+  email                     String    @unique
+  name                      String?
+  password                  String
+  todos                     Todo[]
+  refreshToken              String?
+  refreshTokenExpires       DateTime?
+  verificationToken         String?
+  isVerified                Boolean   @default(false)
+  resetPasswordToken        String?   @unique
+  resetPasswordTokenExpires DateTime?
 }
 
 model Todo {

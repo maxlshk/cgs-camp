@@ -1,16 +1,3 @@
-// import { Router, Request, Response } from 'express';
-
-// const router: Router = Router();
-
-// // @route   POST api/user
-// // @desc    Register user given their email and password, returns the token upon successful registration
-// // @access  Public
-// router.post('/register', async (_: Request, res: Response) => {
-// 	res.send('Add registration logic there');
-// });
-
-// export default router;
-
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { validateBody } from '../../middleware/validator.middleware';
@@ -24,6 +11,10 @@ const router: Router = Router();
 router.post('/signup', validateBody(userSchema), userController.signup);
 
 router.post('/login', validateBody(loginSchema), userController.login);
+
+router.post('/refresh-token', userController.refreshToken);
+
+router.post('/logout', authenticateJwt, userController.logout);
 
 router.get('/verify/:token', userController.verifyAccount);
 
