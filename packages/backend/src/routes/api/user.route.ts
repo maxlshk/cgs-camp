@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
 import { validateBody } from '../../middleware/validator.middleware';
 import { authenticateJwt } from '../../middleware/auth.middleware';
 import * as userController from '../../controllers/user.controller';
-import { userSchema } from '../../types/user.type';
-import { loginSchema } from '../../types/login.type';
+import { userSchema } from '../../schemas/user.schema';
+import { loginSchema } from '../../schemas/login.schema';
+import { forgotPasswordSchema } from '@/schemas/forgot-password.schema';
+import { resetPasswordSchema } from '@/schemas/reset-password.schema';
+import { changePasswordSchema } from '@/schemas/change-password.schema';
 
 const router: Router = Router();
 
@@ -20,23 +22,20 @@ router.get('/verify/:token', userController.verifyAccount);
 
 router.post(
 	'/forgot-password',
-	[body('email').isEmail()],
+	validateBody(forgotPasswordSchema),
 	userController.forgotPassword,
 );
 
 router.post(
 	'/reset-password',
-	[body('token').isString(), body('newPassword').isLength({ min: 6 })],
+	validateBody(resetPasswordSchema),
 	userController.resetPassword,
 );
 
 router.post(
 	'/change-password',
 	authenticateJwt,
-	[
-		body('currentPassword').isLength({ min: 6 }),
-		body('newPassword').isLength({ min: 6 }),
-	],
+	validateBody(changePasswordSchema),
 	userController.changePassword,
 );
 

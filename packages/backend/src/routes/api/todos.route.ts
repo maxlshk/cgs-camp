@@ -3,7 +3,7 @@ import { TodoController } from '../../controllers/todo.controller';
 import { validateBody } from '../../middleware/validator.middleware';
 import { isExist } from '../../middleware/isExist.middleware';
 import { tryCatch } from '../../middleware/tryCatch.middleware';
-import { todoSchema } from '../../types/todos.type';
+import { todoSchema } from '../../schemas/todo.schema';
 import {
 	authenticateJwt,
 	authorizeUser,
