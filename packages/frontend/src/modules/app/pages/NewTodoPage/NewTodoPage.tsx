@@ -7,6 +7,7 @@ import { TextInput } from '~shared/components/textinput/textinput.component';
 import { CheckBox } from '~shared/components/checkbox/checkbox.component';
 import { checkboxContainerStyles } from './NewTodoPage.styles';
 import { ROUTER_KEYS } from '~shared/keys';
+import { TextArea } from '~shared/components/textarea/textarea.component';
 
 export const NewTodoPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -46,17 +47,15 @@ export const NewTodoPage: React.FC = () => {
 				name="title"
 				register={register}
 				placeholder="Title"
-				type="input"
 				required
 				error={errors.title}
 				minLength={3}
 				maxLength={50}
 			/>
-			<TextInput
+			<TextArea
 				name="description"
 				register={register}
 				placeholder="Description"
-				type="textarea"
 				required
 				error={errors.description}
 				minLength={10}

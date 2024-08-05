@@ -26,25 +26,6 @@ export const titleStyles = css`
 	text-align: center;
 `;
 
-export const inputStyles = css`
-	width: 100%;
-	padding: ${THEME.SPACING.MEDIUM};
-	margin-bottom: ${THEME.SPACING.MEDIUM};
-	border: 1px solid ${COLORS.BORDER};
-	border-radius: 4px;
-	font-size: ${THEME.FONT_SIZES.MEDIUM};
-	&:focus {
-		outline: none;
-		border-color: ${COLORS.PRIMARY};
-	}
-`;
-
-export const textareaStyles = css`
-	${inputStyles}
-	min-height: 100px;
-	resize: vertical;
-`;
-
 export const checkboxContainerStyles = css`
 	display: flex;
 	justify-content: space-between;

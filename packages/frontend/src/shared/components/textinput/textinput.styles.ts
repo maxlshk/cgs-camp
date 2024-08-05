@@ -14,12 +14,6 @@ export const inputStyles = css`
 	}
 `;
 
-export const textareaStyles = css`
-	${inputStyles}
-	min-height: 100px;
-	resize: vertical;
-`;
-
 export const errorMessageStyles = css`
 	color: red;
 	font-size: 12px;
