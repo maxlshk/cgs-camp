@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { inputStyles, errorMessageStyles } from './textinput.styles';
+import { textareaStyles } from './textarea.styles';
 import { UseFormRegister, FieldError } from 'react-hook-form';
 import { FormData } from '../form/form.component';
+import { errorMessageStyles } from '../textinput/textinput.styles';
 
 interface FormFieldProps {
 	name: keyof FormData;
@@ -9,26 +10,24 @@ interface FormFieldProps {
 	placeholder: string;
 	defaultValue?: string;
 	required: boolean;
-	inputType?: string;
 	error?: FieldError;
 	minLength?: number;
 	maxLength?: number;
 }
 
-export const TextInput: React.FC<FormFieldProps> = ({
+export const TextArea: React.FC<FormFieldProps> = ({
 	name,
 	register,
 	placeholder,
 	defaultValue,
 	required,
-	inputType = 'text',
 	error,
 	minLength,
 	maxLength,
 }) => {
 	const sharedProps = useMemo(
 		() => ({
-			className: inputStyles,
+			className: textareaStyles,
 			...register(`${name}`, {
 				required: required ? 'This field is required' : false,
 				minLength: minLength
@@ -60,7 +59,7 @@ export const TextInput: React.FC<FormFieldProps> = ({
 
 	return (
 		<div>
-			<input type={inputType} {...sharedProps} />
+			<textarea {...sharedProps} />
 			{error && (
 				<span className={errorMessageStyles}>{error.message}</span>
 			)}

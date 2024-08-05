@@ -7,6 +7,7 @@ import { TextInput } from '~shared/components/textinput/textinput.component';
 import { CheckBox } from '~shared/components/checkbox/checkbox.component';
 import { checkboxContainerStyles } from '../NewTodoPage/NewTodoPage.styles';
 import { ROUTER_KEYS } from '~shared/keys';
+import { TextArea } from '~shared/components/textarea/textarea.component';
 
 export const EditTodoForm: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -51,18 +52,16 @@ export const EditTodoForm: React.FC = () => {
 				register={register}
 				placeholder="Title"
 				defaultValue={todo.title}
-				type="input"
 				required
 				error={errors.title}
 				minLength={3}
 				maxLength={50}
 			/>
-			<TextInput
+			<TextArea
 				name="description"
 				register={register}
 				placeholder="Description"
 				defaultValue={todo.description}
-				type="textarea"
 				required
 				error={errors.description}
 				minLength={10}
