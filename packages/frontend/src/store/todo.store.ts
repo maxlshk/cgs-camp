@@ -1,12 +1,14 @@
 import { create } from 'zustand';
-import { Todo } from '../shared/types/types';
 import { todoService } from '~shared/services/todo.service';
+import { Todo } from '~shared/types/todo.type';
 
 interface TodoState {
 	todos: Todo[];
+	myTodos: Todo[];
 	isLoading: boolean;
 	error: string | null;
 	fetchTodos: () => Promise<void>;
+	fetchMyTodos: () => Promise<void>;
 	addTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
 	updateTodo: (id: number, updates: Partial<Todo>) => Promise<void>;
 	deleteTodo: (id: number) => Promise<void>;
@@ -14,6 +16,7 @@ interface TodoState {
 
 export const useTodoStore = create<TodoState>((set) => ({
 	todos: [],
+	myTodos: [],
 	isLoading: false,
 	error: null,
 	fetchTodos: async (): Promise<void> => {
@@ -25,10 +28,20 @@ export const useTodoStore = create<TodoState>((set) => ({
 			set({ error: 'Failed to fetch todos', isLoading: false });
 		}
 	},
+	fetchMyTodos: async (): Promise<void> => {
+		set({ isLoading: true });
+		try {
+			const myTodos = await todoService.getMyTodos();
+			// console.log('mytodos:', myTodos);
+			set({ myTodos, isLoading: false });
+		} catch (error) {
+			set({ error: 'Failed to fetch todos', isLoading: false });
+		}
+	},
 	addTodo: async (todo: Omit<Todo, 'id'>): Promise<void> => {
 		try {
 			const newTodo = await todoService.addTodo(todo);
-			set((state) => ({ todos: [...state.todos, newTodo] }));
+			set((state) => ({ myTodos: [...state.todos, newTodo] }));
 		} catch (error) {
 			set({ error: 'Failed to add todo' });
 		}
@@ -37,7 +50,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 		try {
 			const updatedTodo = await todoService.updateTodo(id, updates);
 			set((state) => ({
-				todos: state.todos.map((todo) =>
+				myTodos: state.todos.map((todo) =>
 					todo.id === id ? updatedTodo : todo,
 				),
 			}));
@@ -49,7 +62,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 		try {
 			await todoService.deleteTodo(id);
 			set((state) => ({
-				todos: state.todos.filter((todo) => todo.id !== id),
+				myTodos: state.todos.filter((todo) => todo.id !== id),
 			}));
 		} catch (error) {
 			set({ error: 'Failed to delete todo' });

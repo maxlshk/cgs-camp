@@ -1,17 +1,23 @@
 import * as React from 'react';
-import { Todo, ViewType } from '~types/types';
 import { useTodoStore } from '~store/todo.store';
 import { cardStyles, listItemStyles, tableRowStyles } from './TodoItem.styles';
 import { Button, Switch, Intent } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
 import { ROUTER_KEYS } from '~shared/keys';
+import { Todo } from '~shared/types/todo.type';
+import { ViewType } from '~shared/types/view.type';
 
 interface TodoElementProps {
 	todo: Todo;
 	view: ViewType;
+	editable: boolean;
 }
 
-export const TodoElement: React.FC<TodoElementProps> = ({ todo, view }) => {
+export const TodoElement: React.FC<TodoElementProps> = ({
+	todo,
+	view,
+	editable,
+}) => {
 	const { updateTodo, deleteTodo } = useTodoStore();
 	const navigator = useNavigate();
 
@@ -33,14 +39,16 @@ export const TodoElement: React.FC<TodoElementProps> = ({ todo, view }) => {
 				onChange={handleComplete}
 				label={todo.completed ? 'Completed' : 'Not Completed'}
 			/>
-			<div>
-				<Button intent={Intent.PRIMARY} onClick={handleEdit}>
-					Edit
-				</Button>
-				<Button intent={Intent.DANGER} onClick={handleDelete}>
-					Delete
-				</Button>
-			</div>
+			{editable && (
+				<div>
+					<Button intent={Intent.PRIMARY} onClick={handleEdit}>
+						Edit
+					</Button>
+					<Button intent={Intent.DANGER} onClick={handleDelete}>
+						Delete
+					</Button>
+				</div>
+			)}
 		</>
 	);
 

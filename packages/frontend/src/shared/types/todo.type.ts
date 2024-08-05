@@ -5,5 +5,3 @@ export type Todo = {
 	completed: boolean;
 	public: boolean;
 };
-
-export type ViewType = 'table' | 'card' | 'list';

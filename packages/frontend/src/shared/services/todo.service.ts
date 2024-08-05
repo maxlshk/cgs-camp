@@ -1,5 +1,5 @@
 import { HttpService } from './http.service';
-import { Todo } from '../types/types';
+import { Todo } from '../types/todo.type';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,8 +13,13 @@ export class TodoService extends HttpService {
 	}
 
 	async getTodos(): Promise<Todo[]> {
-		console.log('getting todos');
-		return this.get<Todo[]>('/todos/all');
+		return this.get<Todo[]>('/todos/public');
+	}
+
+	async getMyTodos(): Promise<Todo[]> {
+		const todos = this.get<Todo[]>('/todos/my');
+		// console.log(todos);
+		return todos;
 	}
 
 	async addTodo(todo: Omit<Todo, 'id'>): Promise<Todo> {
@@ -25,7 +30,6 @@ export class TodoService extends HttpService {
 		id: number,
 		updates: Partial<Omit<Todo, 'id'>>,
 	): Promise<Todo> {
-		console.log('updating todo', id, updates);
 		return this.put<Todo>(`/todos/${id}`, updates);
 	}
 

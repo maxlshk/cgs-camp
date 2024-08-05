@@ -1,19 +1,63 @@
-// import * as React from 'react';
-
-// export const publicRoutes = <>// PUBLIC_ROUTES</>;
-
-// export const privateRoutes = <>// PRIVATE_ROUTES</>;
-
 import React from 'react';
-import { EditTodoForm } from '~modules/app/pages/EditTodoPage/EditTodoPage';
-import { NewTodoPage } from '~modules/app/pages/NewTodoPage/NewTodoPage';
-import { TodosPage } from '~modules/app/pages/TodosPage/TodosPage';
 import { ROUTER_KEYS } from '~shared/keys';
 
-export const routes = [
+const LoginPage = React.lazy(() =>
+	import('~modules/app/pages/LoginPage/LoginPage').then((module) => ({
+		default: module.LoginPage,
+	})),
+);
+const SignupPage = React.lazy(() =>
+	import('~modules/app/pages/SignupPage/SignupPage').then((module) => ({
+		default: module.SignupPage,
+	})),
+);
+const VerificationPage = React.lazy(() =>
+	import('~modules/app/pages/VerificationPage/VerificationPage').then(
+		(module) => ({
+			default: module.VerificationPage,
+		}),
+	),
+);
+const MyTodosPage = React.lazy(() =>
+	import('~modules/app/pages/MyTodosPage/MyTodosPage').then((module) => ({
+		default: module.MyTodosPage,
+	})),
+);
+const TodosPage = React.lazy(() =>
+	import('~modules/app/pages/TodosPage/TodosPage').then((module) => ({
+		default: module.TodosPage,
+	})),
+);
+const NewTodoPage = React.lazy(() =>
+	import('~modules/app/pages/NewTodoPage/NewTodoPage').then((module) => ({
+		default: module.NewTodoPage,
+	})),
+);
+const EditTodoPage = React.lazy(() =>
+	import('~modules/app/pages/EditTodoPage/EditTodoPage').then((module) => ({
+		default: module.EditTodoPage,
+	})),
+);
+
+export const publicRoutes = [
 	{
-		path: ROUTER_KEYS.ALL_MATCH,
-		element: <div>Home Page</div>,
+		path: ROUTER_KEYS.LOGIN,
+		element: <LoginPage />,
+	},
+	{
+		path: ROUTER_KEYS.SIGNUP,
+		element: <SignupPage />,
+	},
+	{
+		path: ROUTER_KEYS.VERIFY,
+		element: <VerificationPage />,
+	},
+];
+
+export const privateRoutes = [
+	{
+		path: ROUTER_KEYS.DASHBOARD,
+		element: <MyTodosPage />,
 	},
 	{
 		path: ROUTER_KEYS.TODO,
@@ -25,6 +69,6 @@ export const routes = [
 	},
 	{
 		path: ROUTER_KEYS.EDIT,
-		element: <EditTodoForm />,
+		element: <EditTodoPage />,
 	},
 ];

@@ -1,6 +1,8 @@
 export const enum ROUTER_KEYS {
 	ALL_MATCH = '/*',
 	LOGIN = '/login',
+	SIGNUP = '/signup',
+	VERIFY = '/verify/:token',
 	DASHBOARD = '/dashboard',
 	TODO = '/todos',
 	NEW = '/todos/new',
