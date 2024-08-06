@@ -3,10 +3,11 @@ export const enum ROUTER_KEYS {
 	LOGIN = '/login',
 	SIGNUP = '/signup',
 	VERIFY = '/verify/:token',
-	DASHBOARD = '/dashboard',
 	TODO = '/todos',
 	NEW = '/todos/new',
 	EDIT = '/todos/edit/:id',
+	CHANGE_PASSWORD = '/change-password',
+	CHANGE_NAME = '/change-name',
 }
 
 export enum FILTER_TYPES {

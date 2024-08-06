@@ -1,36 +1,39 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '~shared/components/form/form.component';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { TextInput } from '~shared/components/textinput/textinput.component';
 import { ROUTER_KEYS } from '~shared/keys';
+import { EditUser } from '~shared/types/editUser.type';
 import { useUserStore } from '~store/user.store';
-import { LinkContainerStyles } from '../SignupPage/SignupPage.styles';
-import { User } from '~shared/types/user.type';
 
-export const LoginPage: React.FC = () => {
+export const NewTodoPage: React.FC = () => {
 	const navigate = useNavigate();
 	const {
 		handleSubmit,
 		reset,
 		register,
 		formState: { errors },
-	} = useForm<Partial<User>>();
-	const { logIn } = useUserStore();
+	} = useForm<EditUser>();
+	const { user } = useUserStore();
 	const [submitError, setSubmitError] = useState<string | undefined>(
 		undefined,
 	);
 
-	const onSubmit = async (data: Partial<User>): Promise<void> => {
+	const onSubmit = async (data: EditUser): Promise<void> => {
+		if (data.password !== data.repeatPassword) {
+			setSubmitError('Passwords do not match');
+			return;
+		}
 		try {
-			await logIn(data);
+			// await addTodo(data);
 			reset();
 			navigate(ROUTER_KEYS.TODO);
 		} catch (error) {
 			setSubmitError(
 				error instanceof Error
 					? error.message
-					: 'An error occurred while logging in.',
+					: 'An error occurred while editing the user.',
 			);
 		}
 	};
@@ -39,33 +42,37 @@ export const LoginPage: React.FC = () => {
 		<Form
 			handleSubmit={handleSubmit}
 			onSubmit={onSubmit}
-			title={'Log In'}
+			title={'Edit Profile'}
 			submitError={submitError}
 		>
 			<TextInput
-				name="email"
+				name="name"
 				register={register}
-				placeholder="Email"
+				placeholder="Name"
 				required
-				error={errors.email}
-				inputType="email"
+				defaultValue={user.name}
+				error={errors.name}
 				minLength={3}
 				maxLength={50}
 			/>
 			<TextInput
 				name="password"
 				register={register}
-				placeholder="Passsword"
-				required
+				placeholder="Password"
+				required={false}
 				error={errors.password}
-				inputType="password"
 				minLength={6}
 				maxLength={25}
 			/>
-			<div className={LinkContainerStyles}>
-				Don't have an account?
-				<Link to={ROUTER_KEYS.SIGNUP}>Sign Up</Link>
-			</div>
+			<TextInput
+				name="repeatPassword"
+				register={register}
+				placeholder="Repeat Password"
+				required={false}
+				error={errors.repeatPassword}
+				minLength={6}
+				maxLength={25}
+			/>
 		</Form>
 	);
 };

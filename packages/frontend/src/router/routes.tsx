@@ -18,11 +18,6 @@ const VerificationPage = React.lazy(() =>
 		}),
 	),
 );
-const MyTodosPage = React.lazy(() =>
-	import('~modules/app/pages/MyTodosPage/MyTodosPage').then((module) => ({
-		default: module.MyTodosPage,
-	})),
-);
 const TodosPage = React.lazy(() =>
 	import('~modules/app/pages/TodosPage/TodosPage').then((module) => ({
 		default: module.TodosPage,
@@ -55,10 +50,6 @@ export const publicRoutes = [
 ];
 
 export const privateRoutes = [
-	{
-		path: ROUTER_KEYS.DASHBOARD,
-		element: <MyTodosPage />,
-	},
 	{
 		path: ROUTER_KEYS.TODO,
 		element: <TodosPage />,

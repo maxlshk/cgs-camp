@@ -25,40 +25,6 @@ export const todoElementStyles = css`
 	}
 `;
 
-export const titleStyles = css`
-	@media (min-width: ${THEME.BREAKPOINTS.DESKTOP}) {
-		display: table-cell;
-		padding: ${THEME.SPACING.MEDIUM};
-	}
-	@media (max-width: ${THEME.BREAKPOINTS.DESKTOP}) {
-		display: block;
-		font-weight: bold;
-		margin-bottom: ${THEME.SPACING.SMALL};
-	}
-`;
-
-export const descriptionStyles = css`
-	@media (min-width: ${THEME.BREAKPOINTS.DESKTOP}) {
-		display: table-cell;
-		padding: ${THEME.SPACING.MEDIUM};
-	}
-	@media (max-width: ${THEME.BREAKPOINTS.DESKTOP}) {
-		display: block;
-		margin-bottom: ${THEME.SPACING.MEDIUM};
-	}
-`;
-
-export const actionsStyles = css`
-	@media (min-width: ${THEME.BREAKPOINTS.DESKTOP}) {
-		display: table-cell;
-		padding: ${THEME.SPACING.MEDIUM};
-	}
-	@media (max-width: ${THEME.BREAKPOINTS.DESKTOP}) {
-		display: flex;
-		justify-content: space-between;
-	}
-`;
-
 export const tableRowStyles = css`
 	display: table-row;
 
@@ -68,6 +34,8 @@ export const tableRowStyles = css`
 
 	span {
 		display: table-cell;
+		max-width: 300px;
+		overflow: auto;
 		padding-left: ${THEME.SPACING.MEDIUM};
 		padding-right: ${THEME.SPACING.MEDIUM};
 
@@ -100,9 +68,18 @@ export const listItemStyles = css`
 	align-items: center;
 	padding: ${THEME.SPACING.MEDIUM};
 	border-bottom: 1px solid ${COLORS.BORDER};
+	font-size: ${THEME.FONT_SIZES.SMALL};
 
 	&:last-child {
 		border-bottom: none;
+	}
+
+	div {
+		width: 33%;
+	}
+
+	label {
+		width: 33%;
 	}
 `;
 

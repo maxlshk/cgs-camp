@@ -4,7 +4,7 @@ import App from '~modules/app/app.module';
 import { publicRoutes, privateRoutes } from './routes';
 import { ROUTER_KEYS } from '~shared/keys';
 import Loader from '~shared/components/loader/loader.component';
-import AuthorizedLayout from '~modules/app/layouts/Authorizedayout';
+import AuthorizedLayout from '~modules/app/layouts/AuthorizedLayout';
 
 const Router: React.FunctionComponent = () => {
 	return (

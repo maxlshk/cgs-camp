@@ -4,26 +4,37 @@ import { useTodoStore } from '~store/todo.store';
 import { ButtonGroup, Button } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
 import { FILTER_TYPES } from '~shared/keys';
+import { useUserStore } from '~store/user.store';
 
 export const TodosPage: React.FC = () => {
-	const { fetchTodos, isLoading, error } = useTodoStore();
+	const {
+		fetchTodos,
+		isLoading: todoLoading,
+		error: todoError,
+	} = useTodoStore();
+	const {
+		getUser,
+		isLoading: userLoading,
+		error: userError,
+	} = useUserStore();
 	const [filter, setFilter] = React.useState<FILTER_TYPES>(FILTER_TYPES.ALL);
 
 	useEffect(() => {
 		fetchTodos();
-	}, [fetchTodos]);
+		getUser();
+	}, [fetchTodos, getUser]);
 
-	if (isLoading) {
+	if (todoLoading || userLoading) {
 		return <div>Loading...</div>;
 	}
 
-	if (error) {
-		return <div>Error: {error}</div>;
+	if (todoError || userError) {
+		return <div>Error: {todoError || userError}</div>;
 	}
 
 	return (
 		<div>
-			<ButtonGroup large className={buttonGroup}>
+			<ButtonGroup className={buttonGroup}>
 				<Button
 					icon="globe"
 					onClick={() => setFilter(FILTER_TYPES.ALL)}
@@ -54,7 +65,7 @@ export const TodosPage: React.FC = () => {
 				</Button>
 			</ButtonGroup>
 			<div>
-				<TodoList filter={filter} editable={false} />
+				<TodoList filter={filter} />
 			</div>
 		</div>
 	);

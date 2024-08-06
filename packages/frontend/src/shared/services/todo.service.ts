@@ -13,7 +13,7 @@ export class TodoService extends HttpService {
 	}
 
 	async getTodos(): Promise<Todo[]> {
-		return this.get<Todo[]>('/todos/public');
+		return this.get<Todo[]>('/todos/all');
 	}
 
 	async getMyTodos(): Promise<Todo[]> {

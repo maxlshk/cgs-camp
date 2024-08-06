@@ -19,12 +19,12 @@ export const EditTodoPage: React.FC = () => {
 		register,
 		formState: { errors },
 	} = useForm<Omit<Todo, 'id'>>();
-	const { myTodos, updateTodo } = useTodoStore();
+	const { todos, updateTodo } = useTodoStore();
 	const [submitError, setSubmitError] = useState<string | undefined>(
 		undefined,
 	);
 
-	const todo = myTodos.find((todo) => todo.id === Number(id));
+	const todo = todos.find((todo) => todo.id === Number(id));
 
 	const onSubmit = async (data: Omit<Todo, 'id'>): Promise<void> => {
 		try {

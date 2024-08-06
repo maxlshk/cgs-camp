@@ -13,16 +13,16 @@ import { THEME } from '~shared/styles/constants';
 import { FILTER_TYPES } from '~shared/keys';
 import { Todo } from '~shared/types/todo.type';
 import { ViewType } from '~shared/types/view.type';
+import { useUserStore } from '~store/user.store';
 
 interface TodoListProps {
 	filter: string;
-	editable: boolean;
 }
 
-export const TodoList: React.FC<TodoListProps> = ({ filter, editable }) => {
-	const todos = useTodoStore((state) => {
-		return editable ? state.myTodos : state.todos;
-	});
+export const TodoList: React.FC<TodoListProps> = ({ filter }) => {
+	const todos = useTodoStore((state) => state.todos);
+	const user = useUserStore((state) => state.user);
+	console.log('user', user);
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
@@ -67,7 +67,7 @@ export const TodoList: React.FC<TodoListProps> = ({ filter, editable }) => {
 				<div className={headerStyles}>
 					<span>Title</span>
 					<span>Description</span>
-					{editable && <span>Actions</span>}
+					<span>Actions</span>
 				</div>
 			)}
 			{filteredTodos.map((todo) => (
@@ -75,7 +75,7 @@ export const TodoList: React.FC<TodoListProps> = ({ filter, editable }) => {
 					key={todo.id}
 					todo={todo}
 					view={viewType}
-					editable={editable}
+					editable={todo.userId === user.id}
 				/>
 			))}
 		</div>
