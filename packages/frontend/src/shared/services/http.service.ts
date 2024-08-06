@@ -9,6 +9,10 @@ interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 	_retry?: boolean;
 }
 
+interface ErrorResponse {
+	message: string;
+}
+
 export class HttpService {
 	private axiosInstance: AxiosInstance;
 
@@ -56,14 +60,30 @@ export class HttpService {
 						return Promise.reject(refreshError);
 					}
 				}
-				return Promise.reject(error);
+				return Promise.reject(this.handleRequestError(error));
 			},
 		);
 	}
 
+	private handleRequestError(error: unknown): Error {
+		if (axios.isAxiosError(error)) {
+			const errorMessage =
+				(error.response?.data as ErrorResponse)?.message ||
+				error.message;
+			return new Error(errorMessage);
+		}
+		return error instanceof Error
+			? error
+			: new Error('An unknown error occurred');
+	}
+
 	async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-		const response = await this.axiosInstance.get<T>(url, config);
-		return response.data;
+		try {
+			const response = await this.axiosInstance.get<T>(url, config);
+			return response.data;
+		} catch (error) {
+			throw this.handleRequestError(error);
+		}
 	}
 
 	async post<T>(
@@ -71,8 +91,16 @@ export class HttpService {
 		data?: unknown,
 		config?: AxiosRequestConfig,
 	): Promise<T> {
-		const response = await this.axiosInstance.post<T>(url, data, config);
-		return response.data;
+		try {
+			const response = await this.axiosInstance.post<T>(
+				url,
+				data,
+				config,
+			);
+			return response.data;
+		} catch (error) {
+			throw this.handleRequestError(error);
+		}
 	}
 
 	async put<T>(
@@ -80,12 +108,20 @@ export class HttpService {
 		data?: unknown,
 		config?: AxiosRequestConfig,
 	): Promise<T> {
-		const response = await this.axiosInstance.put<T>(url, data, config);
-		return response.data;
+		try {
+			const response = await this.axiosInstance.put<T>(url, data, config);
+			return response.data;
+		} catch (error) {
+			throw this.handleRequestError(error);
+		}
 	}
 
 	async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-		const response = await this.axiosInstance.delete<T>(url, config);
-		return response.data;
+		try {
+			const response = await this.axiosInstance.delete<T>(url, config);
+			return response.data;
+		} catch (error) {
+			throw this.handleRequestError(error);
+		}
 	}
 }

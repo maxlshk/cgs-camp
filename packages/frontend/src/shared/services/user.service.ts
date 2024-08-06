@@ -34,6 +34,36 @@ export class UserService extends HttpService {
 		return response;
 	}
 
+	async changePassword(
+		currentPassword: string,
+		newPassword: string,
+	): Promise<{ message: string }> {
+		return this.post<{ message: string }>('/user/change-password', {
+			currentPassword,
+			newPassword,
+		});
+	}
+
+	async forgotPassword(email: string): Promise<{ message: string }> {
+		return this.post<{ message: string }>('/user/forgot-password', {
+			email,
+		});
+	}
+
+	async resetPassword(
+		token: string,
+		newPassword: string,
+	): Promise<{ message: string }> {
+		return this.post<{ message: string }>('/user/reset-password', {
+			token,
+			newPassword,
+		});
+	}
+
+	async editProfile(changes: { name: string }): Promise<{ message: string }> {
+		return this.post<{ message: string }>('/user/edit-profile', changes);
+	}
+
 	async logOut(): Promise<{ message: string }> {
 		return this.post<{ message: string }>('/user/logout');
 	}

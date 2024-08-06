@@ -8,8 +8,15 @@ interface UserState {
 	error: string | null;
 	getUser: () => Promise<void>;
 	verifyUser: (token: string) => Promise<string>;
-	signUp: (user: Partial<User>) => Promise<string>;
 	logIn: (user: Partial<User>) => Promise<void>;
+	signUp: (user: Partial<User>) => Promise<string>;
+	changePassword: (
+		currentPassword: string,
+		newPassword: string,
+	) => Promise<string>;
+	forgotPassword: (email: string) => Promise<string>;
+	resetPassword: (token: string, newPassword: string) => Promise<string>;
+	editProfile: (changes: { name: string }) => Promise<string>;
 	logOut: () => Promise<string>;
 }
 
@@ -40,7 +47,9 @@ export const useUserStore = create<UserState>((set) => ({
 			localStorage.setItem('accessToken', accessToken);
 			localStorage.setItem('refreshToken', refreshToken);
 		} catch (error) {
-			set({ error: 'Failed to log in' });
+			console.log('caught error', error);
+			set({ error: error.message });
+			throw error;
 		}
 	},
 	signUp: async (user: Partial<User>): Promise<string> => {
@@ -49,6 +58,52 @@ export const useUserStore = create<UserState>((set) => ({
 			return message;
 		} catch (error) {
 			set({ error: 'Failed to update todo' });
+		}
+	},
+	changePassword: async (
+		currentPassword: string,
+		newPassword: string,
+	): Promise<string> => {
+		try {
+			const { message } = await userService.changePassword(
+				currentPassword,
+				newPassword,
+			);
+			return message;
+		} catch (error) {
+			set({ error: 'Failed to change password' });
+		}
+	},
+	forgotPassword: async (email: string): Promise<string> => {
+		try {
+			const { message } = await userService.forgotPassword(email);
+			return message;
+		} catch (error) {
+			set({ error: 'Failed to forgot password' });
+			throw error;
+		}
+	},
+	resetPassword: async (
+		token: string,
+		newPassword: string,
+	): Promise<string> => {
+		try {
+			const { message } = await userService.resetPassword(
+				token,
+				newPassword,
+			);
+			return message;
+		} catch (error) {
+			set({ error: 'Failed to reset password' });
+			throw error;
+		}
+	},
+	editProfile: async (changes: { name: string }): Promise<string> => {
+		try {
+			const { message } = await userService.editProfile(changes);
+			return message;
+		} catch (error) {
+			set({ error: 'Failed to edit profile' });
 		}
 	},
 	logOut: async (): Promise<string> => {

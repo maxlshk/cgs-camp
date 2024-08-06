@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
-import { ButtonGroup, Button } from '@blueprintjs/core';
+import { useUserStore } from '~store/user.store';
+import { ButtonGroup, Button, Spinner } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
 import { FILTER_TYPES } from '~shared/keys';
-import { useUserStore } from '~store/user.store';
 
 export const TodosPage: React.FC = () => {
 	const {
@@ -12,20 +12,37 @@ export const TodosPage: React.FC = () => {
 		isLoading: todoLoading,
 		error: todoError,
 	} = useTodoStore();
-	const {
-		getUser,
-		isLoading: userLoading,
-		error: userError,
-	} = useUserStore();
-	const [filter, setFilter] = React.useState<FILTER_TYPES>(FILTER_TYPES.ALL);
+	const { getUser, error: userError } = useUserStore();
+	const [filter, setFilter] = useState<FILTER_TYPES>(FILTER_TYPES.ALL);
+	const [isInitialLoading, setIsInitialLoading] = useState(true);
 
 	useEffect(() => {
-		fetchTodos();
-		getUser();
+		const loadInitialData = async (): Promise<void> => {
+			try {
+				await Promise.all([fetchTodos(), getUser()]);
+			} catch (error) {
+				console.error('Failed to load initial data:', error);
+			} finally {
+				setIsInitialLoading(false);
+			}
+		};
+
+		loadInitialData();
 	}, [fetchTodos, getUser]);
 
-	if (todoLoading || userLoading) {
-		return <div>Loading...</div>;
+	if (isInitialLoading) {
+		return (
+			<div
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100vh',
+				}}
+			>
+				<Spinner size={50} />
+			</div>
+		);
 	}
 
 	if (todoError || userError) {
@@ -65,7 +82,11 @@ export const TodosPage: React.FC = () => {
 				</Button>
 			</ButtonGroup>
 			<div>
-				<TodoList filter={filter} />
+				{todoLoading ? (
+					<Spinner size={20} />
+				) : (
+					<TodoList filter={filter} />
+				)}
 			</div>
 		</div>
 	);

@@ -4,29 +4,29 @@ import { Form } from '~shared/components/form/form.component';
 import { useNavigate } from 'react-router-dom';
 import { TextInput } from '~shared/components/textinput/textinput.component';
 import { ROUTER_KEYS } from '~shared/keys';
-import { EditUser } from '~shared/types/editUser.type';
 import { useUserStore } from '~store/user.store';
+import { changePassword } from '~shared/types/changePassword.type';
 
-export const NewTodoPage: React.FC = () => {
+export const ChangePasswordPage: React.FC = () => {
 	const navigate = useNavigate();
 	const {
 		handleSubmit,
 		reset,
 		register,
 		formState: { errors },
-	} = useForm<EditUser>();
-	const { user } = useUserStore();
+	} = useForm<changePassword>();
+	const { changePassword } = useUserStore();
 	const [submitError, setSubmitError] = useState<string | undefined>(
 		undefined,
 	);
 
-	const onSubmit = async (data: EditUser): Promise<void> => {
-		if (data.password !== data.repeatPassword) {
+	const onSubmit = async (data: changePassword): Promise<void> => {
+		if (data.newPassword !== data.repeatPassword) {
 			setSubmitError('Passwords do not match');
 			return;
 		}
 		try {
-			// await addTodo(data);
+			await changePassword(data.currentPassword, data.newPassword);
 			reset();
 			navigate(ROUTER_KEYS.TODO);
 		} catch (error) {
@@ -46,21 +46,22 @@ export const NewTodoPage: React.FC = () => {
 			submitError={submitError}
 		>
 			<TextInput
-				name="name"
+				name="currentPassword"
 				register={register}
-				placeholder="Name"
+				placeholder="Current Password"
+				inputType="password"
 				required
-				defaultValue={user.name}
-				error={errors.name}
-				minLength={3}
-				maxLength={50}
+				error={errors.currentPassword}
+				minLength={6}
+				maxLength={25}
 			/>
 			<TextInput
-				name="password"
+				name="newPassword"
 				register={register}
-				placeholder="Password"
-				required={false}
-				error={errors.password}
+				placeholder="New Password"
+				inputType="password"
+				required
+				error={errors.newPassword}
 				minLength={6}
 				maxLength={25}
 			/>
@@ -68,7 +69,8 @@ export const NewTodoPage: React.FC = () => {
 				name="repeatPassword"
 				register={register}
 				placeholder="Repeat Password"
-				required={false}
+				inputType="password"
+				required
 				error={errors.repeatPassword}
 				minLength={6}
 				maxLength={25}

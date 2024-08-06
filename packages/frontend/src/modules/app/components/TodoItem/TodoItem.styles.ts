@@ -31,24 +31,26 @@ export const tableRowStyles = css`
 	&:nth-of-type(even) {
 		background-color: ${COLORS.BACKGROUND};
 	}
+`;
 
-	span {
-		display: table-cell;
-		max-width: 300px;
-		overflow: auto;
-		padding-left: ${THEME.SPACING.MEDIUM};
-		padding-right: ${THEME.SPACING.MEDIUM};
+export const tableCellStyles = css`
+	display: table-cell;
+	align-content: center;
+	max-width: 300px;
+	overflow: auto;
+	padding-left: ${THEME.SPACING.MEDIUM};
+	padding-right: ${THEME.SPACING.MEDIUM};
+`;
 
-		div {
-			display: flex;
-			padding: ${THEME.SPACING.MEDIUM};
-			justify-content: space-between;
-			align-items: center;
+export const rowActionsStyles = css`
+	display: flex;
+	padding: ${THEME.SPACING.MEDIUM};
+	justify-content: space-between;
+	align-items: center;
+	min-height: 70px;
 
-			div {
-				gap: ${THEME.SPACING.SMALL};
-			}
-		}
+	div {
+		gap: ${THEME.SPACING.SMALL};
 	}
 `;
 

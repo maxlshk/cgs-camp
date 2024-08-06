@@ -52,6 +52,7 @@ export const LoginPage: React.FC = () => {
 				minLength={3}
 				maxLength={50}
 			/>
+			<Link to={ROUTER_KEYS.FORGOT_PASSWORD}>Forgot Password?</Link>
 			<TextInput
 				name="password"
 				register={register}

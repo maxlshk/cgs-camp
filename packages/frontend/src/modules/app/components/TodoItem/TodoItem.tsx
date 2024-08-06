@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { useTodoStore } from '~store/todo.store';
-import { cardStyles, listItemStyles, tableRowStyles } from './TodoItem.styles';
+import {
+	cardStyles,
+	listItemStyles,
+	rowActionsStyles,
+	tableCellStyles,
+	tableRowStyles,
+} from './TodoItem.styles';
 import { Button, Switch, Intent } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
 import { ROUTER_KEYS } from '~shared/keys';
@@ -33,33 +39,33 @@ export const TodoElement: React.FC<TodoElementProps> = ({
 	};
 
 	const renderActions = (): React.JSX.Element => (
-		<>
-			<Switch
-				checked={todo.completed}
-				onChange={handleComplete}
-				label={todo.completed ? 'Completed' : 'Not Completed'}
-			/>
+		<div className={rowActionsStyles}>
 			{editable && (
-				<div>
-					<Button intent={Intent.PRIMARY} onClick={handleEdit}>
-						Edit
-					</Button>
-					<Button intent={Intent.DANGER} onClick={handleDelete}>
-						Delete
-					</Button>
-				</div>
+				<>
+					<Switch
+						checked={todo.completed}
+						onChange={handleComplete}
+						label={todo.completed ? 'Completed' : 'Not Completed'}
+					/>
+					<div>
+						<Button intent={Intent.PRIMARY} onClick={handleEdit}>
+							Edit
+						</Button>
+						<Button intent={Intent.DANGER} onClick={handleDelete}>
+							Delete
+						</Button>
+					</div>
+				</>
 			)}
-		</>
+		</div>
 	);
 
 	if (view === 'table') {
 		return (
 			<div className={tableRowStyles}>
-				<span>{todo.title}</span>
-				<span>{todo.description}</span>
-				<span>
-					<div>{renderActions()}</div>
-				</span>
+				<span className={tableCellStyles}>{todo.title}</span>
+				<span className={tableCellStyles}>{todo.description}</span>
+				<span className={tableCellStyles}>{renderActions()}</span>
 			</div>
 		);
 	}

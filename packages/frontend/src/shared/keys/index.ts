@@ -7,6 +7,8 @@ export const enum ROUTER_KEYS {
 	NEW = '/todos/new',
 	EDIT = '/todos/edit/:id',
 	CHANGE_PASSWORD = '/change-password',
+	FORGOT_PASSWORD = '/forgot-password',
+	RESET_PASSWORD = '/reset-password/:token',
 	CHANGE_NAME = '/change-name',
 }
 
