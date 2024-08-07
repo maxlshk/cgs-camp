@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
-import { ButtonGroup, Button, Spinner } from '@blueprintjs/core';
+import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
 
 export const TodosPage: React.FC = () => {
@@ -23,9 +23,13 @@ export const TodosPage: React.FC = () => {
 	} = useUserStore();
 
 	const searchParams = new URLSearchParams(location.search);
+	const [searchInput, setSearchInput] = useState(
+		searchParams.get('search') || '',
+	);
 	const currentFilters = {
 		public: searchParams.get('public'),
 		status: searchParams.get('status'),
+		search: searchParams.get('search'),
 	};
 
 	useEffect(() => {
@@ -42,6 +46,7 @@ export const TodosPage: React.FC = () => {
 						| 'completed'
 						| 'active'
 						| undefined,
+					search: currentFilters.search || undefined,
 				}),
 				getUser(),
 			]);
@@ -51,7 +56,7 @@ export const TodosPage: React.FC = () => {
 	}, [fetchTodos, getUser, location.search]);
 
 	const updateFilters = (
-		filterType: 'public' | 'status',
+		filterType: 'public' | 'status' | 'search',
 		value: string | null,
 	): void => {
 		const updatedFilters = { ...currentFilters };
@@ -62,6 +67,8 @@ export const TodosPage: React.FC = () => {
 		} else if (filterType === 'status') {
 			updatedFilters.status =
 				updatedFilters.status === value ? null : value;
+		} else if (filterType === 'search') {
+			updatedFilters.search = value;
 		}
 
 		const updatedParams = new URLSearchParams();
@@ -72,6 +79,11 @@ export const TodosPage: React.FC = () => {
 		});
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
+	};
+
+	const handleSearch = (e: React.FormEvent): void => {
+		e.preventDefault();
+		updateFilters('search', searchInput);
 	};
 
 	if (!user || !todos) {
@@ -95,7 +107,36 @@ export const TodosPage: React.FC = () => {
 
 	return (
 		<div>
+			<form onSubmit={handleSearch} style={{ marginBottom: '1rem' }}>
+				<InputGroup
+					type="text"
+					placeholder="Search todos..."
+					value={searchInput}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setSearchInput(e.target.value)
+					}
+					rightElement={
+						<Button type="submit" icon="search" minimal={true} />
+					}
+				/>
+			</form>
 			<ButtonGroup className={buttonGroup}>
+				<Button
+					icon="globe"
+					onClick={() => {
+						updateFilters('public', null);
+						updateFilters('status', null);
+						setSearchInput('');
+						updateFilters('search', null);
+					}}
+					active={
+						!currentFilters.public &&
+						!currentFilters.status &&
+						!currentFilters.search
+					}
+				>
+					All
+				</Button>
 				<Button
 					icon="person"
 					onClick={() => updateFilters('public', 'false')}
