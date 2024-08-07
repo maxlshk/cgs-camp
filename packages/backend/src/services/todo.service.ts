@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient, Todo } from '@prisma/client';
+import { PrismaClient, Todo } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,37 +11,19 @@ export class TodoService {
 	}): Promise<Todo[]> {
 		const { search, status, public: isPublic, userId } = filters;
 
-		let whereClause: Prisma.TodoWhereInput = {
-			OR: [{ userId }, { public: true }],
-		};
-
-		if (search) {
-			whereClause = {
-				AND: [
-					whereClause,
-					{ title: { contains: search, mode: 'insensitive' } },
-				],
-			};
-		}
-
-		if (status === 'completed') {
-			whereClause = {
-				AND: [whereClause, { completed: true }],
-			};
-		} else if (status === 'active') {
-			whereClause = {
-				AND: [whereClause, { completed: false }],
-			};
-		}
-
-		if (isPublic !== undefined) {
-			whereClause = {
-				AND: [whereClause, { public: isPublic }],
-			};
-		}
+		let completedStatus: boolean | undefined;
+		if (status === 'completed') completedStatus = true;
+		else if (status === 'active') completedStatus = false;
 
 		return prisma.todo.findMany({
-			where: whereClause,
+			where: {
+				OR: [{ userId }, { public: true }],
+				title: search
+					? { contains: search, mode: 'insensitive' }
+					: undefined,
+				completed: completedStatus,
+				public: isPublic,
+			},
 		});
 	}
 

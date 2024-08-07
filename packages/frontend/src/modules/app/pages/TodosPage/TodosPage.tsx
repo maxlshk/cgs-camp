@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
 import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
-import { buttonGroup } from './TodosPage.styles';
+import {
+	buttonGroup,
+	searchFormStyles,
+	spinnerStyles,
+} from './TodosPage.styles';
+import { useInitialData } from '~shared/hooks/useInitialData';
+import { todoFilters } from '~shared/types/todoFilters.type';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const {
-		todos,
-		fetchTodos,
-		isLoading: todoLoading,
-		error: todoError,
-	} = useTodoStore();
-	const {
-		user,
-		getUser,
-		error: userError,
-		isLoading: userLoading,
-	} = useUserStore();
+	const { todos, isLoading: todoLoading, error: todoError } = useTodoStore();
+	const { user, error: userError, isLoading: userLoading } = useUserStore();
+	useInitialData();
 
 	const searchParams = new URLSearchParams(location.search);
 	const [searchInput, setSearchInput] = useState(
@@ -32,43 +29,17 @@ export const TodosPage: React.FC = () => {
 		search: searchParams.get('search'),
 	};
 
-	useEffect(() => {
-		const loadInitialData = async (): Promise<void> => {
-			await Promise.all([
-				fetchTodos({
-					public:
-						currentFilters.public === 'true'
-							? true
-							: currentFilters.public === 'false'
-								? false
-								: undefined,
-					status: currentFilters.status as
-						| 'completed'
-						| 'active'
-						| undefined,
-					search: currentFilters.search || undefined,
-				}),
-				getUser(),
-			]);
-		};
-
-		loadInitialData();
-	}, [fetchTodos, getUser, location.search]);
-
 	const updateFilters = (
-		filterType: 'public' | 'status' | 'search',
+		filterType: keyof todoFilters,
 		value: string | null,
 	): void => {
 		const updatedFilters = { ...currentFilters };
 
-		if (filterType === 'public') {
-			updatedFilters.public =
-				updatedFilters.public === value ? null : value;
-		} else if (filterType === 'status') {
-			updatedFilters.status =
-				updatedFilters.status === value ? null : value;
-		} else if (filterType === 'search') {
-			updatedFilters.search = value;
+		if (filterType === 'search') {
+			updatedFilters[filterType] = value;
+		} else {
+			updatedFilters[filterType] =
+				updatedFilters[filterType] === value ? null : value;
 		}
 
 		const updatedParams = new URLSearchParams();
@@ -77,6 +48,7 @@ export const TodosPage: React.FC = () => {
 				updatedParams.set(key, val);
 			}
 		});
+
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
 	};
@@ -88,14 +60,7 @@ export const TodosPage: React.FC = () => {
 
 	if (!user || !todos) {
 		return (
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					height: '100vh',
-				}}
-			>
+			<div className={spinnerStyles}>
 				<Spinner size={50} />
 			</div>
 		);
@@ -107,7 +72,7 @@ export const TodosPage: React.FC = () => {
 
 	return (
 		<div>
-			<form onSubmit={handleSearch} style={{ marginBottom: '1rem' }}>
+			<form onSubmit={handleSearch} className={searchFormStyles}>
 				<InputGroup
 					type="text"
 					placeholder="Search todos..."

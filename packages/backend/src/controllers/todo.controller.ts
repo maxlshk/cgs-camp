@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { TodoService } from '../services/todo.service';
 import { User } from '@prisma/client';
+import { TodoStatus } from '@/types/todo-status.type';
 
 const todoService = new TodoService();
 
@@ -11,13 +12,8 @@ export class TodoController {
 
 		const filters = {
 			search: search as string | undefined,
-			status: status as 'completed' | 'active' | undefined,
-			public:
-				isPublic === 'true'
-					? true
-					: isPublic === 'false'
-						? false
-						: undefined,
+			status: status as TodoStatus | undefined,
+			public: isPublic ? /^true$/i.test(isPublic as string) : undefined,
 			userId,
 		};
 
