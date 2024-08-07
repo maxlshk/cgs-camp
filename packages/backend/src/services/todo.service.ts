@@ -8,8 +8,17 @@ export class TodoService {
 		status?: 'completed' | 'active';
 		public?: boolean;
 		userId: number;
-	}): Promise<Todo[]> {
-		const { search, status, public: isPublic, userId } = filters;
+		page?: number;
+		pageSize?: number;
+	}): Promise<{ todos: Todo[]; total: number }> {
+		const {
+			search,
+			status,
+			public: isPublic,
+			userId,
+			page = 1,
+			pageSize = 10,
+		} = filters;
 
 		let whereClause: Prisma.TodoWhereInput = {
 			OR: [{ userId }, { public: true }],
@@ -40,9 +49,19 @@ export class TodoService {
 			};
 		}
 
-		return prisma.todo.findMany({
-			where: whereClause,
-		});
+		const skip = (page - 1) * pageSize;
+
+		const [todos, total] = await Promise.all([
+			prisma.todo.findMany({
+				where: whereClause,
+				skip,
+				take: pageSize,
+				orderBy: { createdAt: 'desc' },
+			}),
+			prisma.todo.count({ where: whereClause }),
+		]);
+
+		return { todos, total };
 	}
 
 	async getTodoById(id: number, userId: number): Promise<Todo | null> {

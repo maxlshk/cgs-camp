@@ -10,8 +10,6 @@ import {
 } from './TodoList.styles';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
-// import { FILTER_TYPES } from '~shared/keys';
-// import { Todo } from '~shared/types/todo.type';
 import { ViewType } from '~shared/types/view.type';
 import { useUserStore } from '~store/user.store';
 
@@ -32,15 +30,6 @@ export const TodoList: React.FC = () => {
 			</div>
 		);
 	}
-
-	// const filterFunctions: Record<FILTER_TYPES, (todo: Todo) => boolean> = {
-	// 	[FILTER_TYPES.ALL]: () => true,
-	// 	[FILTER_TYPES.PRIVATE]: (todo) => !todo.public,
-	// 	[FILTER_TYPES.PUBLIC]: (todo) => todo.public,
-	// 	[FILTER_TYPES.COMPLETED]: (todo) => todo.completed,
-	// };
-
-	// const filteredTodos = todos.filter(filterFunctions[filter]);
 
 	const viewStyles: Record<ViewType, string> = {
 		table: tableStyles,
