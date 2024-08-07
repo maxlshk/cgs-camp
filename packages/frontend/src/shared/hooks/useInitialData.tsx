@@ -31,7 +31,14 @@ export const useInitialData = (): void => {
 				search: searchParams.get('search') || undefined,
 			};
 
-			await Promise.all([fetchTodos(currentFilters), getUser()]);
+			await Promise.all([
+				fetchTodos(
+					currentFilters,
+					parseInt(searchParams.get('page') || '1'),
+					parseInt(searchParams.get('pageSize') || '10'),
+				),
+				getUser(),
+			]);
 		};
 
 		loadInitialData();

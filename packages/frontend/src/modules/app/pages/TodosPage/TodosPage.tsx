@@ -12,7 +12,7 @@ import {
 	spinnerStyles,
 } from './TodosPage.styles';
 import { useInitialData } from '~shared/hooks/useInitialData';
-import { todoFilters } from '~shared/types/todoFilters.type';
+// import { todoFilters } from '~shared/types/todoFilters.type';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -44,25 +44,16 @@ export const TodosPage: React.FC = () => {
 	};
 
 	const updateFilters = (
-		filterType: keyof todoFilters,
+		filterType: 'public' | 'status' | 'search' | 'page' | 'pageSize',
 		value: string | null,
 	): void => {
 		const updatedFilters = { ...currentFilters, [filterType]: value };
-
-		if (filterType === 'search') {
-			updatedFilters[filterType] = value;
-		} else {
-			updatedFilters[filterType] =
-				updatedFilters[filterType] === value ? null : value;
-		}
-
 		const updatedParams = new URLSearchParams();
 		Object.entries(updatedFilters).forEach(([key, val]) => {
 			if (val !== null && val !== undefined && val !== '') {
 				updatedParams.set(key, val);
 			}
 		});
-
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
 	};
@@ -70,7 +61,7 @@ export const TodosPage: React.FC = () => {
 	const handleSearch = (e: React.FormEvent): void => {
 		e.preventDefault();
 		updateFilters('search', searchInput);
-		updateFilters('page', '1'); // Reset to first page on new search
+		updateFilters('page', '1');
 	};
 
 	const handlePageChange = (newPage: number): void => {
