@@ -18,7 +18,6 @@ export class TodoService extends HttpService {
 
 	async getMyTodos(): Promise<Todo[]> {
 		const todos = this.get<Todo[]>('/todos/my');
-		// console.log(todos);
 		return todos;
 	}
 

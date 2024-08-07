@@ -1,4 +1,3 @@
-// src/modules/app/app.module.tsx
 import React from 'react';
 import { Global } from '@emotion/react';
 import { globalStyles, appStyles } from './app.styles';
