@@ -8,29 +8,28 @@ import { FILTER_TYPES } from '~shared/keys';
 
 export const TodosPage: React.FC = () => {
 	const {
+		todos,
 		fetchTodos,
 		isLoading: todoLoading,
 		error: todoError,
 	} = useTodoStore();
-	const { getUser, error: userError } = useUserStore();
+	const {
+		user,
+		getUser,
+		error: userError,
+		isLoading: userLoading,
+	} = useUserStore();
 	const [filter, setFilter] = useState<FILTER_TYPES>(FILTER_TYPES.ALL);
-	const [isInitialLoading, setIsInitialLoading] = useState(true);
 
 	useEffect(() => {
 		const loadInitialData = async (): Promise<void> => {
-			try {
-				await Promise.all([fetchTodos(), getUser()]);
-			} catch (error) {
-				console.error('Failed to load initial data:', error);
-			} finally {
-				setIsInitialLoading(false);
-			}
+			await Promise.all([fetchTodos(), getUser()]);
 		};
 
 		loadInitialData();
 	}, [fetchTodos, getUser]);
 
-	if (isInitialLoading) {
+	if (!user || !todos) {
 		return (
 			<div
 				style={{
@@ -82,7 +81,7 @@ export const TodosPage: React.FC = () => {
 				</Button>
 			</ButtonGroup>
 			<div>
-				{todoLoading ? (
+				{todoLoading || userLoading ? (
 					<Spinner size={20} />
 				) : (
 					<TodoList filter={filter} />
