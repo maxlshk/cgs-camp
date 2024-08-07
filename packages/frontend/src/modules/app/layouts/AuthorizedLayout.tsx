@@ -4,22 +4,10 @@ import { ROUTER_KEYS } from '~shared/keys';
 import { contentStyles } from './AuthorizedLayout.styles';
 import { Popover, Menu, Button, Alignment, Navbar } from '@blueprintjs/core';
 import { useUserStore } from '~store/user.store';
-// import { useTodoStore } from '~store/todo.store';
 
 const AuthorizedLayout: React.FC = () => {
 	const { logOut } = useUserStore();
 	const navigator = useNavigate();
-	// const { fetchTodos } = useTodoStore();
-	// const { getUser } = useUserStore();
-
-	// useEffect(() => {
-	// 	const loadInitialData = async (): Promise<void> => {
-	// 		console.log('loadInitialData');
-	// 		await Promise.all([fetchTodos(), getUser()]);
-	// 	};
-
-	// 	loadInitialData();
-	// }, [fetchTodos, getUser]);
 
 	return (
 		<>

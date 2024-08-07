@@ -10,16 +10,12 @@ import {
 } from './TodoList.styles';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
-import { FILTER_TYPES } from '~shared/keys';
-import { Todo } from '~shared/types/todo.type';
+// import { FILTER_TYPES } from '~shared/keys';
+// import { Todo } from '~shared/types/todo.type';
 import { ViewType } from '~shared/types/view.type';
 import { useUserStore } from '~store/user.store';
 
-interface TodoListProps {
-	filter: string;
-}
-
-export const TodoList: React.FC<TodoListProps> = ({ filter }) => {
+export const TodoList: React.FC = () => {
 	const todos = useTodoStore((state) => state.todos);
 	const user = useUserStore((state) => state.user);
 	const isDesktop = useMediaQuery(
@@ -37,14 +33,14 @@ export const TodoList: React.FC<TodoListProps> = ({ filter }) => {
 		);
 	}
 
-	const filterFunctions: Record<FILTER_TYPES, (todo: Todo) => boolean> = {
-		[FILTER_TYPES.ALL]: () => true,
-		[FILTER_TYPES.PRIVATE]: (todo) => !todo.public,
-		[FILTER_TYPES.PUBLIC]: (todo) => todo.public,
-		[FILTER_TYPES.COMPLETED]: (todo) => todo.completed,
-	};
+	// const filterFunctions: Record<FILTER_TYPES, (todo: Todo) => boolean> = {
+	// 	[FILTER_TYPES.ALL]: () => true,
+	// 	[FILTER_TYPES.PRIVATE]: (todo) => !todo.public,
+	// 	[FILTER_TYPES.PUBLIC]: (todo) => todo.public,
+	// 	[FILTER_TYPES.COMPLETED]: (todo) => todo.completed,
+	// };
 
-	const filteredTodos = todos.filter(filterFunctions[filter]);
+	// const filteredTodos = todos.filter(filterFunctions[filter]);
 
 	const viewStyles: Record<ViewType, string> = {
 		table: tableStyles,
@@ -69,7 +65,7 @@ export const TodoList: React.FC<TodoListProps> = ({ filter }) => {
 					<span>Actions</span>
 				</div>
 			)}
-			{filteredTodos.map((todo) => (
+			{todos.map((todo) => (
 				<TodoElement
 					key={todo.id}
 					todo={todo}

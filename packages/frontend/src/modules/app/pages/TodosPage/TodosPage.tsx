@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
 import { ButtonGroup, Button, Spinner } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
-import { FILTER_TYPES } from '~shared/keys';
 
 export const TodosPage: React.FC = () => {
+	const navigate = useNavigate();
+	const location = useLocation();
 	const {
 		todos,
 		fetchTodos,
@@ -19,18 +21,60 @@ export const TodosPage: React.FC = () => {
 		error: userError,
 		isLoading: userLoading,
 	} = useUserStore();
-	const [filter, setFilter] = useState<FILTER_TYPES>(FILTER_TYPES.ALL);
 
-	const loadInitialData = useCallback(async () => {
-		if (!user) await getUser();
-		if (todos.length === 0) await fetchTodos();
-	}, [user, todos.length, getUser, fetchTodos]);
+	const searchParams = new URLSearchParams(location.search);
+	const currentFilters = {
+		public: searchParams.get('public'),
+		status: searchParams.get('status'),
+	};
 
 	useEffect(() => {
-		loadInitialData();
-	}, [loadInitialData]);
+		const loadInitialData = async (): Promise<void> => {
+			await Promise.all([
+				fetchTodos({
+					public:
+						currentFilters.public === 'true'
+							? true
+							: currentFilters.public === 'false'
+								? false
+								: undefined,
+					status: currentFilters.status as
+						| 'completed'
+						| 'active'
+						| undefined,
+				}),
+				getUser(),
+			]);
+		};
 
-	if (!user || todos.length === 0) {
+		loadInitialData();
+	}, [fetchTodos, getUser, location.search]);
+
+	const updateFilters = (
+		filterType: 'public' | 'status',
+		value: string | null,
+	): void => {
+		const updatedFilters = { ...currentFilters };
+
+		if (filterType === 'public') {
+			updatedFilters.public =
+				updatedFilters.public === value ? null : value;
+		} else if (filterType === 'status') {
+			updatedFilters.status =
+				updatedFilters.status === value ? null : value;
+		}
+
+		const updatedParams = new URLSearchParams();
+		Object.entries(updatedFilters).forEach(([key, val]) => {
+			if (val !== null && val !== undefined && val !== '') {
+				updatedParams.set(key, val);
+			}
+		});
+		const queryString = updatedParams.toString();
+		navigate(queryString ? `?${queryString}` : '');
+	};
+
+	if (!user || !todos) {
 		return (
 			<div
 				style={{
@@ -53,39 +97,39 @@ export const TodosPage: React.FC = () => {
 		<div>
 			<ButtonGroup className={buttonGroup}>
 				<Button
-					icon="globe"
-					onClick={() => setFilter(FILTER_TYPES.ALL)}
-					active={filter === FILTER_TYPES.ALL}
-				>
-					All
-				</Button>
-				<Button
 					icon="person"
-					onClick={() => setFilter(FILTER_TYPES.PRIVATE)}
-					active={filter === FILTER_TYPES.PRIVATE}
+					onClick={() => updateFilters('public', 'false')}
+					active={currentFilters.public === 'false'}
 				>
 					Private
 				</Button>
 				<Button
 					icon="people"
-					onClick={() => setFilter(FILTER_TYPES.PUBLIC)}
-					active={filter === FILTER_TYPES.PUBLIC}
+					onClick={() => updateFilters('public', 'true')}
+					active={currentFilters.public === 'true'}
 				>
 					Public
 				</Button>
 				<Button
 					icon="tick"
-					onClick={() => setFilter(FILTER_TYPES.COMPLETED)}
-					active={filter === FILTER_TYPES.COMPLETED}
+					onClick={() => updateFilters('status', 'completed')}
+					active={currentFilters.status === 'completed'}
 				>
 					Completed
+				</Button>
+				<Button
+					icon="cross"
+					onClick={() => updateFilters('status', 'active')}
+					active={currentFilters.status === 'active'}
+				>
+					Active
 				</Button>
 			</ButtonGroup>
 			<div>
 				{todoLoading || userLoading ? (
 					<Spinner size={20} />
 				) : (
-					<TodoList filter={filter} />
+					<TodoList />
 				)}
 			</div>
 		</div>

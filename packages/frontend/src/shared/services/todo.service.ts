@@ -15,7 +15,6 @@ export class TodoService extends HttpService {
 
 	async getTodos(filters?: Partial<todoFilters>): Promise<Todo[]> {
 		const params = new URLSearchParams();
-
 		if (filters) {
 			if (filters.search) params.append('search', filters.search);
 			if (filters.status) params.append('status', filters.status);
