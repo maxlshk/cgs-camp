@@ -122,22 +122,6 @@ export const TodosPage: React.FC = () => {
 			</form>
 			<ButtonGroup className={buttonGroup}>
 				<Button
-					icon="globe"
-					onClick={() => {
-						updateFilters('public', null);
-						updateFilters('status', null);
-						setSearchInput('');
-						updateFilters('search', null);
-					}}
-					active={
-						!currentFilters.public &&
-						!currentFilters.status &&
-						!currentFilters.search
-					}
-				>
-					All
-				</Button>
-				<Button
 					icon="person"
 					onClick={() => updateFilters('public', 'false')}
 					active={currentFilters.public === 'false'}
