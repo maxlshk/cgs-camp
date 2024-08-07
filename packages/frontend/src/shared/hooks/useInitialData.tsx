@@ -1,13 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { todoFilters } from '~shared/types/todoFilters.type';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
-
-interface Filters {
-	public?: boolean;
-	status?: 'completed' | 'active';
-	search?: string;
-}
 
 export const useInitialData = (): void => {
 	const location = useLocation();
@@ -17,13 +12,9 @@ export const useInitialData = (): void => {
 	useEffect(() => {
 		const loadInitialData = async (): Promise<void> => {
 			const searchParams = new URLSearchParams(location.search);
-			const currentFilters: Filters = {
-				public:
-					searchParams.get('public') === 'true'
-						? true
-						: searchParams.get('public') === 'false'
-							? false
-							: undefined,
+			const isPublic = searchParams.get('public');
+			const currentFilters: todoFilters = {
+				public: isPublic ? /true/.test(isPublic) : undefined,
 				status: searchParams.get('status') as
 					| 'completed'
 					| 'active'
