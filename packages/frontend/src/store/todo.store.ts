@@ -9,7 +9,11 @@ interface TodoState {
 	pagination: Pagination;
 	isLoading: boolean;
 	error: string | null;
-	fetchTodos: (filters?: Partial<todoFilters>) => Promise<void>;
+	fetchTodos: (
+		filters?: Partial<todoFilters>,
+		page?: number,
+		pageSize?: number,
+	) => Promise<void>;
 	addTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
 	updateTodo: (id: number, updates: Partial<Todo>) => Promise<void>;
 	deleteTodo: (id: number) => Promise<void>;
@@ -17,16 +21,24 @@ interface TodoState {
 
 export const useTodoStore = create<TodoState>((set) => ({
 	todos: [],
-	pagination: null,
+	pagination: { total: 0, page: 1, pageSize: 10, totalPages: 1 },
 	isLoading: false,
 	error: null,
-	fetchTodos: async (filters?: Partial<todoFilters>): Promise<void> => {
+	fetchTodos: async (
+		filters?: Partial<todoFilters>,
+		page = 1,
+		pageSize = 10,
+	): Promise<void> => {
 		set({ isLoading: true });
 		try {
-			const todos = await todoService.getTodos(filters);
+			const response = await todoService.getTodos(
+				filters,
+				page,
+				pageSize,
+			);
 			set({
-				todos: todos.todos,
-				pagination: todos.pagination,
+				todos: response.todos,
+				pagination: response.pagination,
 				isLoading: false,
 			});
 		} catch (error) {

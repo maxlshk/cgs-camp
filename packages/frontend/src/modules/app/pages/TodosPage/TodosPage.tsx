@@ -5,12 +5,15 @@ import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
 import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
+import { useMediaQuery } from 'usehooks-ts';
+import { THEME } from '~shared/styles/constants';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const {
 		todos,
+		pagination,
 		fetchTodos,
 		isLoading: todoLoading,
 		error: todoError,
@@ -21,6 +24,13 @@ export const TodosPage: React.FC = () => {
 		error: userError,
 		isLoading: userLoading,
 	} = useUserStore();
+
+	const isDesktop = useMediaQuery(
+		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
+	);
+	// const isTablet = useMediaQuery(
+	// 	`(min-width: ${THEME.BREAKPOINTS.TABLET}) and (max-width: ${THEME.BREAKPOINTS.DESKTOP})`,
+	// );
 
 	const searchParams = new URLSearchParams(location.search);
 	const [searchInput, setSearchInput] = useState(
@@ -35,19 +45,23 @@ export const TodosPage: React.FC = () => {
 	useEffect(() => {
 		const loadInitialData = async (): Promise<void> => {
 			await Promise.all([
-				fetchTodos({
-					public:
-						currentFilters.public === 'true'
-							? true
-							: currentFilters.public === 'false'
-								? false
-								: undefined,
-					status: currentFilters.status as
-						| 'completed'
-						| 'active'
-						| undefined,
-					search: currentFilters.search || undefined,
-				}),
+				fetchTodos(
+					{
+						public:
+							currentFilters.public === 'true'
+								? true
+								: currentFilters.public === 'false'
+									? false
+									: undefined,
+						status: currentFilters.status as
+							| 'completed'
+							| 'active'
+							| undefined,
+						search: currentFilters.search || undefined,
+					},
+					parseInt(searchParams.get('page') || '1'),
+					parseInt(searchParams.get('pageSize') || '10'),
+				),
 				getUser(),
 			]);
 		};
@@ -56,21 +70,10 @@ export const TodosPage: React.FC = () => {
 	}, [fetchTodos, getUser, location.search]);
 
 	const updateFilters = (
-		filterType: 'public' | 'status' | 'search',
+		filterType: 'public' | 'status' | 'search' | 'page' | 'pageSize',
 		value: string | null,
 	): void => {
-		const updatedFilters = { ...currentFilters };
-
-		if (filterType === 'public') {
-			updatedFilters.public =
-				updatedFilters.public === value ? null : value;
-		} else if (filterType === 'status') {
-			updatedFilters.status =
-				updatedFilters.status === value ? null : value;
-		} else if (filterType === 'search') {
-			updatedFilters.search = value;
-		}
-
+		const updatedFilters = { ...currentFilters, [filterType]: value };
 		const updatedParams = new URLSearchParams();
 		Object.entries(updatedFilters).forEach(([key, val]) => {
 			if (val !== null && val !== undefined && val !== '') {
@@ -84,6 +87,11 @@ export const TodosPage: React.FC = () => {
 	const handleSearch = (e: React.FormEvent): void => {
 		e.preventDefault();
 		updateFilters('search', searchInput);
+		updateFilters('page', '1'); // Reset to first page on new search
+	};
+
+	const handlePageChange = (newPage: number): void => {
+		updateFilters('page', newPage.toString());
 	};
 
 	if (!user || !todos) {
@@ -154,7 +162,28 @@ export const TodosPage: React.FC = () => {
 				{todoLoading || userLoading ? (
 					<Spinner size={20} />
 				) : (
-					<TodoList />
+					<>
+						<TodoList />
+						{isDesktop && (
+							<ButtonGroup>
+								{[...Array(pagination.totalPages)].map(
+									(_, index) => (
+										<Button
+											key={index}
+											onClick={() =>
+												handlePageChange(index + 1)
+											}
+											active={
+												pagination.page === index + 1
+											}
+										>
+											{index + 1}
+										</Button>
+									),
+								)}
+							</ButtonGroup>
+						)}
+					</>
 				)}
 			</div>
 		</div>

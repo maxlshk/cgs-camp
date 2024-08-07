@@ -16,6 +16,8 @@ export class TodoService extends HttpService {
 
 	async getTodos(
 		filters?: Partial<todoFilters>,
+		page: number = 1,
+		pageSize: number = 10,
 	): Promise<{ todos: Todo[]; pagination: Pagination }> {
 		const params = new URLSearchParams();
 		if (filters) {
@@ -24,6 +26,8 @@ export class TodoService extends HttpService {
 			if (filters.public !== undefined)
 				params.append('public', filters.public.toString());
 		}
+		params.append('page', page.toString());
+		params.append('pageSize', pageSize.toString());
 
 		const queryString = params.toString();
 		const url = `/todos/all${queryString ? `?${queryString}` : ''}`;

@@ -58,14 +58,23 @@ export class TodoController {
 	async updateTodo(req: Request, res: Response): Promise<void> {
 		const id = parseInt(req.params.id);
 		const userId = (req.user as User).id;
-		const todo = await todoService.updateTodo(id, userId, req.body);
-		if (!todo) {
+		const { title, description, completed, public: isPublic } = req.body;
+
+		const updatedTodo = await todoService.updateTodo(id, userId, {
+			title,
+			description,
+			completed,
+			public: isPublic,
+		});
+
+		if (!updatedTodo) {
 			res.status(404).json({
 				message: 'Todo not found or access denied',
 			});
 			return;
 		}
-		res.json(todo);
+
+		res.json(updatedTodo);
 	}
 
 	async deleteTodo(req: Request, res: Response): Promise<void> {

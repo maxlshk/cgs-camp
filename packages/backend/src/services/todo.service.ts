@@ -91,10 +91,12 @@ export class TodoService {
 
 		return prisma.todo.update({
 			where: { id },
-			data,
+			data: {
+				...data,
+				createdAt: new Date(),
+			},
 		});
 	}
-
 	async deleteTodo(id: number, userId: number): Promise<Todo | null> {
 		const todo = await prisma.todo.findUnique({ where: { id } });
 
