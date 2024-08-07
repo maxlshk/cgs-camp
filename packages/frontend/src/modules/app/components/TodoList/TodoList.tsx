@@ -22,7 +22,6 @@ interface TodoListProps {
 export const TodoList: React.FC<TodoListProps> = ({ filter }) => {
 	const todos = useTodoStore((state) => state.todos);
 	const user = useUserStore((state) => state.user);
-	console.log('user', user);
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
