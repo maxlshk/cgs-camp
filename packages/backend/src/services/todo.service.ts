@@ -20,34 +20,18 @@ export class TodoService {
 			pageSize = 10,
 		} = filters;
 
-		let whereClause: Prisma.TodoWhereInput = {
+		let completedStatus: boolean | undefined;
+		if (status === 'completed') completedStatus = true;
+		else if (status === 'active') completedStatus = false;
+
+		const whereClause = {
 			OR: [{ userId }, { public: true }],
+			title: search
+				? { contains: search, mode: 'insensitive' as Prisma.QueryMode }
+				: undefined,
+			completed: completedStatus,
+			public: isPublic,
 		};
-
-		if (search) {
-			whereClause = {
-				AND: [
-					whereClause,
-					{ title: { contains: search, mode: 'insensitive' } },
-				],
-			};
-		}
-
-		if (status === 'completed') {
-			whereClause = {
-				AND: [whereClause, { completed: true }],
-			};
-		} else if (status === 'active') {
-			whereClause = {
-				AND: [whereClause, { completed: false }],
-			};
-		}
-
-		if (isPublic !== undefined) {
-			whereClause = {
-				AND: [whereClause, { public: isPublic }],
-			};
-		}
 
 		const skip = (page - 1) * pageSize;
 
@@ -63,7 +47,6 @@ export class TodoService {
 
 		return { todos, total };
 	}
-
 	async getTodoById(id: number, userId: number): Promise<Todo | null> {
 		const todo = await prisma.todo.findUnique({ where: { id } });
 

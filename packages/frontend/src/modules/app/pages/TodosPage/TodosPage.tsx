@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
 import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
-import { buttonGroup } from './TodosPage.styles';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
+import {
+	buttonGroup,
+	searchFormStyles,
+	spinnerStyles,
+} from './TodosPage.styles';
+import { useInitialData } from '~shared/hooks/useInitialData';
+import { todoFilters } from '~shared/types/todoFilters.type';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -14,16 +20,11 @@ export const TodosPage: React.FC = () => {
 	const {
 		todos,
 		pagination,
-		fetchTodos,
 		isLoading: todoLoading,
 		error: todoError,
 	} = useTodoStore();
-	const {
-		user,
-		getUser,
-		error: userError,
-		isLoading: userLoading,
-	} = useUserStore();
+	const { user, error: userError, isLoading: userLoading } = useUserStore();
+	useInitialData();
 
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
@@ -42,44 +43,26 @@ export const TodosPage: React.FC = () => {
 		search: searchParams.get('search'),
 	};
 
-	useEffect(() => {
-		const loadInitialData = async (): Promise<void> => {
-			await Promise.all([
-				fetchTodos(
-					{
-						public:
-							currentFilters.public === 'true'
-								? true
-								: currentFilters.public === 'false'
-									? false
-									: undefined,
-						status: currentFilters.status as
-							| 'completed'
-							| 'active'
-							| undefined,
-						search: currentFilters.search || undefined,
-					},
-					parseInt(searchParams.get('page') || '1'),
-					parseInt(searchParams.get('pageSize') || '10'),
-				),
-				getUser(),
-			]);
-		};
-
-		loadInitialData();
-	}, [fetchTodos, getUser, location.search]);
-
 	const updateFilters = (
-		filterType: 'public' | 'status' | 'search' | 'page' | 'pageSize',
+		filterType: keyof todoFilters,
 		value: string | null,
 	): void => {
 		const updatedFilters = { ...currentFilters, [filterType]: value };
+
+		if (filterType === 'search') {
+			updatedFilters[filterType] = value;
+		} else {
+			updatedFilters[filterType] =
+				updatedFilters[filterType] === value ? null : value;
+		}
+
 		const updatedParams = new URLSearchParams();
 		Object.entries(updatedFilters).forEach(([key, val]) => {
 			if (val !== null && val !== undefined && val !== '') {
 				updatedParams.set(key, val);
 			}
 		});
+
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
 	};
@@ -96,14 +79,7 @@ export const TodosPage: React.FC = () => {
 
 	if (!user || !todos) {
 		return (
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					height: '100vh',
-				}}
-			>
+			<div className={spinnerStyles}>
 				<Spinner size={50} />
 			</div>
 		);
@@ -115,7 +91,7 @@ export const TodosPage: React.FC = () => {
 
 	return (
 		<div>
-			<form onSubmit={handleSearch} style={{ marginBottom: '1rem' }}>
+			<form onSubmit={handleSearch} className={searchFormStyles}>
 				<InputGroup
 					type="text"
 					placeholder="Search todos..."
