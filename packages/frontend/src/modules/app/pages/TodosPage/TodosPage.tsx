@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
 import { ButtonGroup, Button, Spinner } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
 import { FILTER_TYPES } from '~shared/keys';
-import { todoFilters } from '~shared/types/todoFilters.type';
 
 export const TodosPage: React.FC = () => {
 	const {
@@ -22,30 +21,16 @@ export const TodosPage: React.FC = () => {
 	} = useUserStore();
 	const [filter, setFilter] = useState<FILTER_TYPES>(FILTER_TYPES.ALL);
 
-	useEffect(() => {
-		const loadInitialData = async (): Promise<void> => {
-			await Promise.all([fetchTodos(), getUser()]);
-		};
+	const loadInitialData = useCallback(async () => {
+		if (!user) await getUser();
+		if (todos.length === 0) await fetchTodos();
+	}, [user, todos.length, getUser, fetchTodos]);
 
+	useEffect(() => {
 		loadInitialData();
-	}, [fetchTodos, getUser]);
-	useEffect(() => {
-		const filters: Partial<todoFilters> = {};
-		switch (filter) {
-			case FILTER_TYPES.PRIVATE:
-				filters.public = false;
-				break;
-			case FILTER_TYPES.PUBLIC:
-				filters.public = true;
-				break;
-			case FILTER_TYPES.COMPLETED:
-				filters.status = 'completed';
-				break;
-		}
-		fetchTodos(filters);
-	}, [filter, fetchTodos]);
+	}, [loadInitialData]);
 
-	if (!user || !todos) {
+	if (!user || todos.length === 0) {
 		return (
 			<div
 				style={{

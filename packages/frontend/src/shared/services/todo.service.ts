@@ -24,7 +24,7 @@ export class TodoService extends HttpService {
 		}
 
 		const queryString = params.toString();
-		const url = `/todos/my${queryString ? `?${queryString}` : ''}`;
+		const url = `/todos/all${queryString ? `?${queryString}` : ''}`;
 
 		return this.get<Todo[]>(url);
 	}
