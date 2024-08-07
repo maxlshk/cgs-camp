@@ -5,6 +5,7 @@ import { useUserStore } from '~store/user.store';
 import { ButtonGroup, Button, Spinner } from '@blueprintjs/core';
 import { buttonGroup } from './TodosPage.styles';
 import { FILTER_TYPES } from '~shared/keys';
+import { todoFilters } from '~shared/types/todoFilters.type';
 
 export const TodosPage: React.FC = () => {
 	const {
@@ -29,6 +30,22 @@ export const TodosPage: React.FC = () => {
 
 		loadInitialData();
 	}, [fetchTodos, getUser]);
+
+	useEffect(() => {
+		const filters: Partial<todoFilters> = {};
+		switch (filter) {
+			case FILTER_TYPES.PRIVATE:
+				filters.public = false;
+				break;
+			case FILTER_TYPES.PUBLIC:
+				filters.public = true;
+				break;
+			case FILTER_TYPES.COMPLETED:
+				filters.status = 'completed';
+				break;
+		}
+		fetchTodos(filters);
+	}, [filter, fetchTodos]);
 
 	if (isInitialLoading) {
 		return (

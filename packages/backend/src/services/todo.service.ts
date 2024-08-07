@@ -1,19 +1,47 @@
-import { PrismaClient, Todo } from '@prisma/client';
+import { Prisma, PrismaClient, Todo } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export class TodoService {
-	async getAllTodos(userId: number): Promise<Todo[]> {
-		return prisma.todo.findMany({
-			where: {
-				OR: [{ userId: userId }, { public: true }],
-			},
-		});
-	}
+	async getFilteredTodos(filters: {
+		search?: string;
+		status?: 'completed' | 'active';
+		public?: boolean;
+		userId: number;
+	}): Promise<Todo[]> {
+		const { search, status, public: isPublic, userId } = filters;
 
-	async getTodosByUserId(userId: number): Promise<Todo[]> {
+		let whereClause: Prisma.TodoWhereInput = {
+			OR: [{ userId }, { public: true }],
+		};
+
+		if (search) {
+			whereClause = {
+				AND: [
+					whereClause,
+					{ title: { contains: search, mode: 'insensitive' } },
+				],
+			};
+		}
+
+		if (status === 'completed') {
+			whereClause = {
+				AND: [whereClause, { completed: true }],
+			};
+		} else if (status === 'active') {
+			whereClause = {
+				AND: [whereClause, { completed: false }],
+			};
+		}
+
+		if (isPublic !== undefined) {
+			whereClause = {
+				AND: [whereClause, { public: isPublic }],
+			};
+		}
+
 		return prisma.todo.findMany({
-			where: { userId },
+			where: whereClause,
 		});
 	}
 

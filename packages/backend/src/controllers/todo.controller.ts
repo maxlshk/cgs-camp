@@ -5,15 +5,23 @@ import { User } from '@prisma/client';
 const todoService = new TodoService();
 
 export class TodoController {
-	getAllTodos = async (req: Request, res: Response): Promise<void> => {
-		const userId = (req.user as User).id;
-		const todos = await todoService.getAllTodos(userId);
-		res.json(todos);
-	};
+	async getFilteredTodos(req: Request, res: Response): Promise<void> {
+		const userId = (req.user as { id: number }).id;
+		const { search, status, public: isPublic } = req.query;
 
-	async getMyTodos(req: Request, res: Response): Promise<void> {
-		const userId = (req.user as User).id;
-		const todos = await todoService.getTodosByUserId(userId);
+		const filters = {
+			search: search as string | undefined,
+			status: status as 'completed' | 'active' | undefined,
+			public:
+				isPublic === 'true'
+					? true
+					: isPublic === 'false'
+						? false
+						: undefined,
+			userId,
+		};
+
+		const todos = await todoService.getFilteredTodos(filters);
 		res.json(todos);
 	}
 
