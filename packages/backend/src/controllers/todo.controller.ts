@@ -13,7 +13,7 @@ export class TodoController {
 		const filters = {
 			search: search as string | undefined,
 			status: status as TodoStatus | undefined,
-			public: isPublic ? /^true$/i.test(isPublic as string) : undefined,
+			public: isPublic ? /true/.test(isPublic as string) : undefined,
 			userId,
 		};
 
