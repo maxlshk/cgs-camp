@@ -1,23 +1,18 @@
-import React, { useRef, useEffect } from 'react';
-import { TodoElement } from '../TodoItem/TodoItem';
+import React from 'react';
 import { useTodoStore } from '~store/todo.store';
-import {
-	emptyStateStyles,
-	headerStyles,
-	listStyles,
-	sliderStyles,
-	tableStyles,
-	paginationControlsStyles,
-} from './TodoList.styles';
+import { useUserStore } from '~store/user.store';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
-import { ViewType } from '~shared/types/view.type';
-import { useUserStore } from '~store/user.store';
-import { Button } from '@blueprintjs/core';
+import { emptyStateStyles } from './TodoList.styles';
+import { CarouselView } from './TodoListViews/CarouselView/CarouselView';
+import { ListView } from './TodoListViews/ListView/ListView';
+import { TableView } from './TodoListViews/TableView/TableView';
+import { DisplayType } from '~shared/types/display.type';
 
 export const TodoList: React.FC = () => {
 	const { todos, pagination, fetchTodos } = useTodoStore();
 	const user = useUserStore((state) => state.user);
+
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
@@ -25,31 +20,13 @@ export const TodoList: React.FC = () => {
 		`(min-width: ${THEME.BREAKPOINTS.TABLET}) and (max-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
 
-	const listRef = useRef<HTMLDivElement>(null);
+	const getViewType = (): DisplayType => {
+		if (isDesktop) return DisplayType.DESKTOP;
+		if (isTablet) return DisplayType.TABLET;
+		return DisplayType.PHONE;
+	};
 
-	useEffect(() => {
-		const handleScroll = (): void => {
-			if (listRef.current) {
-				const { scrollLeft, scrollWidth, clientWidth } =
-					listRef.current;
-				if (scrollLeft + clientWidth >= scrollWidth - 1) {
-					if (pagination.page < pagination.totalPages) {
-						fetchTodos(undefined, pagination.page + 1, 1, true);
-					}
-				}
-			}
-		};
-
-		if (isTablet && listRef.current) {
-			listRef.current.addEventListener('scroll', handleScroll);
-		}
-
-		return () => {
-			if (listRef.current) {
-				listRef.current.removeEventListener('scroll', handleScroll);
-			}
-		};
-	}, [isTablet, pagination, fetchTodos]);
+	const viewType = getViewType();
 
 	if (todos.length === 0) {
 		return (
@@ -59,55 +36,33 @@ export const TodoList: React.FC = () => {
 		);
 	}
 
-	const viewStyles: Record<ViewType, string> = {
-		table: tableStyles,
-		card: sliderStyles,
-		list: listStyles,
-	};
-
-	const getViewType = (): ViewType => {
-		if (isDesktop) return 'table';
-		if (isTablet) return 'card';
-		return 'list';
-	};
-
-	const viewType = getViewType();
-
 	const handleLoadMore = (): void => {
 		if (pagination.page < pagination.totalPages) {
-			fetchTodos(undefined, pagination.page + 1, 1, true);
+			fetchTodos(undefined, pagination.page + 1, 3, true);
 		}
 	};
 
-	return (
-		<>
-			<div className={viewStyles[viewType]} ref={listRef}>
-				{viewType === 'table' && (
-					<div className={headerStyles}>
-						<span>Title</span>
-						<span>Description</span>
-						<span>Actions</span>
-					</div>
-				)}
-				{todos.map((todo) => (
-					<TodoElement
-						key={todo.id}
-						todo={todo}
-						view={viewType}
-						editable={todo.userId === user.id}
-					/>
-				))}
-			</div>
-			{!isDesktop && !isTablet && (
-				<div className={paginationControlsStyles}>
-					<Button
-						onClick={handleLoadMore}
-						disabled={pagination.page >= pagination.totalPages}
-					>
-						Load More
-					</Button>
-				</div>
-			)}
-		</>
-	);
+	const hasMoreTodos = pagination.page < pagination.totalPages;
+
+	const viewComponents = {
+		[DisplayType.DESKTOP]: <TableView todos={todos} userId={user.id} />,
+		[DisplayType.TABLET]: (
+			<CarouselView
+				todos={todos}
+				userId={user.id}
+				onLoadMore={handleLoadMore}
+				hasMoreTodos={hasMoreTodos}
+			/>
+		),
+		[DisplayType.PHONE]: (
+			<ListView
+				todos={todos}
+				userId={user.id}
+				onLoadMore={handleLoadMore}
+				hasMoreTodos={hasMoreTodos}
+			/>
+		),
+	};
+
+	return viewComponents[viewType];
 };

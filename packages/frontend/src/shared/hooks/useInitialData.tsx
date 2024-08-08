@@ -25,7 +25,7 @@ export const useInitialData = (): void => {
 			fetchTodos(
 				currentFilters,
 				parseInt(searchParams.get('page') || '1'),
-				parseInt(searchParams.get('pageSize') || '1'),
+				parseInt(searchParams.get('pageSize') || '3'),
 			),
 			getUser(),
 		]);
