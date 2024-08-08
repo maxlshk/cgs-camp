@@ -12,7 +12,7 @@ import {
 	spinnerStyles,
 } from './TodosPage.styles';
 import { useInitialData } from '~shared/hooks/useInitialData';
-// import { todoFilters } from '~shared/types/todoFilters.type';
+import { todoFilters } from '~shared/types/todoFilters.type';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -29,9 +29,6 @@ export const TodosPage: React.FC = () => {
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
-	// const isTablet = useMediaQuery(
-	// 	`(min-width: ${THEME.BREAKPOINTS.TABLET}) and (max-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	// );
 
 	const searchParams = new URLSearchParams(location.search);
 	const [searchInput, setSearchInput] = useState(
@@ -44,16 +41,25 @@ export const TodosPage: React.FC = () => {
 	};
 
 	const updateFilters = (
-		filterType: 'public' | 'status' | 'search' | 'page' | 'pageSize',
+		filterType: keyof todoFilters | 'page' | 'pageSize',
 		value: string | null,
 	): void => {
-		const updatedFilters = { ...currentFilters, [filterType]: value };
+		const updatedFilters = { ...currentFilters };
+
+		if (filterType === 'search') {
+			updatedFilters[filterType] = value;
+		} else {
+			updatedFilters[filterType] =
+				updatedFilters[filterType] === value ? null : value;
+		}
+
 		const updatedParams = new URLSearchParams();
 		Object.entries(updatedFilters).forEach(([key, val]) => {
 			if (val !== null && val !== undefined && val !== '') {
 				updatedParams.set(key, val);
 			}
 		});
+
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
 	};
@@ -61,7 +67,6 @@ export const TodosPage: React.FC = () => {
 	const handleSearch = (e: React.FormEvent): void => {
 		e.preventDefault();
 		updateFilters('search', searchInput);
-		updateFilters('page', '1');
 	};
 
 	const handlePageChange = (newPage: number): void => {

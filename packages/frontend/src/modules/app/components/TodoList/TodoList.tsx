@@ -34,7 +34,7 @@ export const TodoList: React.FC = () => {
 					listRef.current;
 				if (scrollLeft + clientWidth >= scrollWidth - 1) {
 					if (pagination.page < pagination.totalPages) {
-						fetchTodos(undefined, pagination.page + 1);
+						fetchTodos(undefined, pagination.page + 1, 1, true);
 					}
 				}
 			}
@@ -75,7 +75,7 @@ export const TodoList: React.FC = () => {
 
 	const handleLoadMore = (): void => {
 		if (pagination.page < pagination.totalPages) {
-			fetchTodos(undefined, pagination.page + 1);
+			fetchTodos(undefined, pagination.page + 1, 1, true);
 		}
 	};
 

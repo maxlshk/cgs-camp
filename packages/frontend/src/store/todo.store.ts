@@ -13,6 +13,7 @@ interface TodoState {
 		filters?: Partial<todoFilters>,
 		page?: number,
 		pageSize?: number,
+		append?: boolean,
 	) => Promise<void>;
 	addTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
 	updateTodo: (id: number, updates: Partial<Todo>) => Promise<void>;
@@ -28,6 +29,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 		filters?: Partial<todoFilters>,
 		page = 1,
 		pageSize = 10,
+		append = false,
 	): Promise<void> => {
 		set({ isLoading: true });
 		try {
@@ -36,11 +38,13 @@ export const useTodoStore = create<TodoState>((set) => ({
 				page,
 				pageSize,
 			);
-			set({
-				todos: response.todos,
+			set((state) => ({
+				todos: append
+					? [...state.todos, ...response.todos]
+					: response.todos,
 				pagination: response.pagination,
 				isLoading: false,
-			});
+			}));
 		} catch (error) {
 			set({ error: 'Failed to fetch todos', isLoading: false });
 		}
