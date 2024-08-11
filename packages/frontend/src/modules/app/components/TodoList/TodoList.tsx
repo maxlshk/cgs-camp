@@ -1,32 +1,19 @@
 import React from 'react';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
-import { useMediaQuery } from 'usehooks-ts';
-import { THEME } from '~shared/styles/constants';
+import { useFilterStore } from '~store/filter.store';
 import { emptyStateStyles } from './TodoList.styles';
 import { CarouselView } from './TodoListViews/CarouselView/CarouselView';
 import { ListView } from './TodoListViews/ListView/ListView';
 import { TableView } from './TodoListViews/TableView/TableView';
 import { DisplayType } from '~shared/types/display.type';
+import { useSwitchDisplay } from '~shared/hooks/useSwitchDisplay';
 
 export const TodoList: React.FC = () => {
-	const { todos, pagination, fetchTodos } = useTodoStore();
+	const { todos } = useTodoStore();
 	const user = useUserStore((state) => state.user);
-
-	const isDesktop = useMediaQuery(
-		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	);
-	const isTablet = useMediaQuery(
-		`(min-width: ${THEME.BREAKPOINTS.TABLET}) and (max-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	);
-
-	const getViewType = (): DisplayType => {
-		if (isDesktop) return DisplayType.DESKTOP;
-		if (isTablet) return DisplayType.TABLET;
-		return DisplayType.PHONE;
-	};
-
-	const viewType = getViewType();
+	const { pagination, setPagination } = useFilterStore();
+	const { displayType } = useSwitchDisplay();
 
 	if (todos.length === 0) {
 		return (
@@ -38,7 +25,7 @@ export const TodoList: React.FC = () => {
 
 	const handleLoadMore = (): void => {
 		if (pagination.page < pagination.totalPages) {
-			fetchTodos(undefined, pagination.page + 1, 3, true);
+			setPagination({ page: pagination.page + 1 });
 		}
 	};
 
@@ -64,5 +51,5 @@ export const TodoList: React.FC = () => {
 		),
 	};
 
-	return viewComponents[viewType];
+	return viewComponents[displayType];
 };

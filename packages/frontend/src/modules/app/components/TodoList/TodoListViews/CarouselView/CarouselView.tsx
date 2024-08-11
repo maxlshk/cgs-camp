@@ -7,7 +7,7 @@ import {
 	cardStyles,
 	rightControlsStyles,
 } from './CarouselView.styles';
-import { STORAGE_KEYS } from '~shared/keys';
+import { useFilterStore } from '~store/filter.store';
 
 interface CarouselViewProps {
 	todos: Todo[];
@@ -22,15 +22,8 @@ export const CarouselView: React.FC<CarouselViewProps> = ({
 	onLoadMore,
 	hasMoreTodos,
 }) => {
-	const [currentIndex, setCurrentIndex] = useState(
-		localStorage.getItem(STORAGE_KEYS.LAST_TODO_INDEX)
-			? parseInt(
-					localStorage.getItem(
-						STORAGE_KEYS.LAST_TODO_INDEX,
-					) as string,
-				)
-			: 0,
-	);
+	const { lastViewedIndex, setLastViewedIndex } = useFilterStore();
+	const [currentIndex, setCurrentIndex] = useState(lastViewedIndex);
 
 	useEffect(() => {
 		if (currentIndex >= todos.length) {
@@ -39,24 +32,25 @@ export const CarouselView: React.FC<CarouselViewProps> = ({
 	}, [todos, currentIndex]);
 
 	const goToPrevious = (): void => {
-		setCurrentIndex((prevIndex) =>
-			prevIndex > 0 ? prevIndex - 1 : prevIndex,
-		);
+		setCurrentIndex((prevIndex) => {
+			const newIndex = prevIndex > 0 ? prevIndex - 1 : prevIndex;
+			setLastViewedIndex(newIndex);
+			return newIndex;
+		});
 	};
 
 	const goToNext = (): void => {
-		setCurrentIndex((prevIndex) =>
-			prevIndex < todos.length - 1 ? prevIndex + 1 : prevIndex,
-		);
+		setCurrentIndex((prevIndex) => {
+			const newIndex =
+				prevIndex < todos.length - 1 ? prevIndex + 1 : prevIndex;
+			setLastViewedIndex(newIndex);
+			return newIndex;
+		});
 	};
 
 	const handleLoadMore = (): void => {
 		onLoadMore();
-
-		localStorage.setItem(
-			STORAGE_KEYS.LAST_TODO_INDEX,
-			currentIndex.toString(),
-		);
+		setLastViewedIndex(currentIndex);
 	};
 
 	return (

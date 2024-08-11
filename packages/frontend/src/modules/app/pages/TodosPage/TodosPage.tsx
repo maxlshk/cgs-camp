@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
+import { useFilterStore } from '~store/filter.store';
 import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
-import { useMediaQuery } from 'usehooks-ts';
-import { THEME } from '~shared/styles/constants';
+import { useSwitchDisplay } from '~shared/hooks/useSwitchDisplay';
 import {
 	buttonGroup,
 	paginationStyles,
@@ -14,55 +14,48 @@ import {
 	todosContainerStyles,
 } from './TodosPage.styles';
 import { useInitialData } from '~shared/hooks/useInitialData';
-import { todoFilters } from '~shared/types/todoFilters.type';
+import { DisplayType } from '~shared/types/display.type';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const {
-		todos,
-		pagination,
-		isLoading: todoLoading,
-		error: todoError,
-	} = useTodoStore();
+	const { todos, isLoading: todoLoading, error: todoError } = useTodoStore();
 	const { user, error: userError, isLoading: userLoading } = useUserStore();
+	const { filters, pagination, setFilters, setPagination } = useFilterStore();
+	const { displayType } = useSwitchDisplay();
 	useInitialData();
 
-	const isDesktop = useMediaQuery(
-		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	);
-	const isPhone = useMediaQuery(`(max-width: ${THEME.BREAKPOINTS.MOBILE})`);
+	const [searchInput, setSearchInput] = useState(filters.search || '');
 
-	const searchParams = new URLSearchParams(location.search);
-	const [searchInput, setSearchInput] = useState(
-		searchParams.get('search') || '',
-	);
-	const currentFilters = {
-		public: searchParams.get('public'),
-		status: searchParams.get('status'),
-		search: searchParams.get('search'),
-	};
+	useEffect(() => {
+		const searchParams = new URLSearchParams(location.search);
+		setFilters({
+			public:
+				searchParams.get('public') === 'true'
+					? true
+					: searchParams.get('public') === 'false'
+						? false
+						: undefined,
+			status: searchParams.get('status') as
+				| 'completed'
+				| 'active'
+				| undefined,
+			search: searchParams.get('search') || undefined,
+		});
+		setPagination({ page: parseInt(searchParams.get('page') || '1') });
+	}, [location.search, setFilters, setPagination]);
 
 	const updateFilters = (
-		filterType: keyof todoFilters | 'page' | 'pageSize',
+		filterType: keyof typeof filters | 'page',
 		value: string | null,
 	): void => {
-		const updatedFilters = { ...currentFilters };
-
-		if (filterType === 'search') {
-			updatedFilters[filterType] = value;
-		} else {
-			updatedFilters[filterType] =
-				updatedFilters[filterType] === value ? null : value;
-		}
-
+		const updatedFilters = { ...filters, [filterType]: value };
 		const updatedParams = new URLSearchParams();
 		Object.entries(updatedFilters).forEach(([key, val]) => {
 			if (val !== null && val !== undefined && val !== '') {
-				updatedParams.set(key, val);
+				updatedParams.set(key, val.toString());
 			}
 		});
-
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
 	};
@@ -105,30 +98,58 @@ export const TodosPage: React.FC = () => {
 			</form>
 			<ButtonGroup className={buttonGroup}>
 				<Button
-					icon={isPhone ? undefined : 'lock'}
-					onClick={() => updateFilters('public', 'false')}
-					active={currentFilters.public === 'false'}
+					icon={
+						displayType === DisplayType.PHONE ? undefined : 'lock'
+					}
+					onClick={() =>
+						updateFilters(
+							'public',
+							filters.public === false ? null : 'false',
+						)
+					}
+					active={filters.public === false}
 				>
 					Private
 				</Button>
 				<Button
-					icon={isPhone ? undefined : 'people'}
-					onClick={() => updateFilters('public', 'true')}
-					active={currentFilters.public === 'true'}
+					icon={
+						displayType === DisplayType.PHONE ? undefined : 'people'
+					}
+					onClick={() =>
+						updateFilters(
+							'public',
+							filters.public === true ? null : 'true',
+						)
+					}
+					active={filters.public === true}
 				>
 					Public
 				</Button>
 				<Button
-					icon={isPhone ? undefined : 'tick'}
-					onClick={() => updateFilters('status', 'completed')}
-					active={currentFilters.status === 'completed'}
+					icon={
+						displayType === DisplayType.PHONE ? undefined : 'tick'
+					}
+					onClick={() =>
+						updateFilters(
+							'status',
+							filters.status === 'completed' ? null : 'completed',
+						)
+					}
+					active={filters.status === 'completed'}
 				>
 					Completed
 				</Button>
 				<Button
-					icon={isPhone ? undefined : 'target'}
-					onClick={() => updateFilters('status', 'active')}
-					active={currentFilters.status === 'active'}
+					icon={
+						displayType === DisplayType.PHONE ? undefined : 'target'
+					}
+					onClick={() =>
+						updateFilters(
+							'status',
+							filters.status === 'active' ? null : 'active',
+						)
+					}
+					active={filters.status === 'active'}
 				>
 					Active
 				</Button>
@@ -139,7 +160,7 @@ export const TodosPage: React.FC = () => {
 				) : (
 					<>
 						<TodoList />
-						{isDesktop && (
+						{displayType === DisplayType.DESKTOP && (
 							<ButtonGroup className={paginationStyles}>
 								{[...Array(pagination.totalPages)].map(
 									(_, index) => (
