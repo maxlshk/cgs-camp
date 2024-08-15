@@ -14,7 +14,26 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id                        Int       @id @default(autoincrement())
+  email                     String    @unique
+  name                      String?
+  password                  String
+  todos                     Todo[]
+  refreshToken              String?
+  refreshTokenExpires       DateTime?
+  verificationToken         String?
+  isVerified                Boolean   @default(false)
+  resetPasswordToken        String?   @unique
+  resetPasswordTokenExpires DateTime?
+}
+
+model Todo {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  public      Boolean @default(false)
+  completed   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  userId      Int
+  user        User    @relation(fields: [userId], references: [id])
 }

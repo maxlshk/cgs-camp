@@ -1,21 +1,16 @@
-import * as React from 'react';
+import React from 'react';
+import { Global } from '@emotion/react';
+import { globalStyles, appStyles } from './app.styles';
 
-import Button from '~shared/components/button/button.component';
+interface AppProps {
+	children: React.ReactNode;
+}
 
-const App = (): React.ReactNode => {
-	const [count, setCount] = React.useState(0);
-
-	const onIncrease = (): void => {
-		setCount((prev) => {
-			return prev + 1;
-		});
-	};
-
+const App: React.FC<AppProps> = ({ children }) => {
 	return (
 		<>
-			<h1>Todo project</h1>
-			<p>{count}</p>
-			<Button text="Increase" onClick={onIncrease} />
+			<Global styles={globalStyles} />
+			<div className={appStyles}>{children}</div>
 		</>
 	);
 };
