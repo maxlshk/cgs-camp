@@ -24,11 +24,13 @@ export const useFilterStore = create<FilterState>((set) => ({
 	pagination: { total: 0, page: 1, pageSize: 3, totalPages: 1 },
 	displayType: DisplayType.DESKTOP,
 	lastViewedIndex: 0,
-	setFilters: (newFilters): void =>
+	setFilters: (newFilters): void => {
 		set((state) => ({
 			filters: { ...state.filters, ...newFilters },
 			pagination: { ...state.pagination, page: 1 },
-		})),
+		}));
+		console.log('newFilters', newFilters);
+	},
 	setPagination: (newPagination): void =>
 		set((state) => ({
 			pagination: { ...state.pagination, ...newPagination },

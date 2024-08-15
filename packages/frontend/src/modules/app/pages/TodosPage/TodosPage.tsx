@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
@@ -18,32 +18,14 @@ import { DisplayType } from '~shared/types/display.type';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
-	const location = useLocation();
 	const { todos, isLoading: todoLoading, error: todoError } = useTodoStore();
 	const { user, error: userError, isLoading: userLoading } = useUserStore();
-	const { filters, pagination, setFilters, setPagination } = useFilterStore();
+	const { filters, pagination } = useFilterStore();
 	const { displayType } = useSwitchDisplay();
+
 	useInitialData();
 
 	const [searchInput, setSearchInput] = useState(filters.search || '');
-
-	useEffect(() => {
-		const searchParams = new URLSearchParams(location.search);
-		setFilters({
-			public:
-				searchParams.get('public') === 'true'
-					? true
-					: searchParams.get('public') === 'false'
-						? false
-						: undefined,
-			status: searchParams.get('status') as
-				| 'completed'
-				| 'active'
-				| undefined,
-			search: searchParams.get('search') || undefined,
-		});
-		setPagination({ page: parseInt(searchParams.get('page') || '1') });
-	}, [location.search, setFilters, setPagination]);
 
 	const updateFilters = (
 		filterType: keyof typeof filters | 'page',
@@ -159,7 +141,7 @@ export const TodosPage: React.FC = () => {
 					<Spinner size={20} />
 				) : (
 					<>
-						<TodoList />
+						<TodoList displayType={displayType} />
 						{displayType === DisplayType.DESKTOP && (
 							<ButtonGroup className={paginationStyles}>
 								{[...Array(pagination.totalPages)].map(

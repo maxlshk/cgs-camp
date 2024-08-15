@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
 import { useFilterStore } from '~store/filter.store';
-import { useTodoStore } from '~store/todo.store';
 import { DisplayType } from '~shared/types/display.type';
 
 export const useSwitchDisplay = (): {
 	displayType: DisplayType;
 } => {
+	console.log('useSwitchDisplay');
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
@@ -16,9 +16,9 @@ export const useSwitchDisplay = (): {
 	);
 
 	const { setDisplayType, resetPagination, displayType } = useFilterStore();
-	const { fetchTodos } = useTodoStore();
 
 	useEffect(() => {
+		console.log('useEffect');
 		let newDisplayType: DisplayType;
 		if (isDesktop) {
 			newDisplayType = DisplayType.DESKTOP;
@@ -30,19 +30,11 @@ export const useSwitchDisplay = (): {
 
 		if (newDisplayType !== displayType) {
 			setDisplayType(newDisplayType);
-			if (newDisplayType !== DisplayType.DESKTOP) {
-				resetPagination();
-				fetchTodos();
-			}
+			// if (newDisplayType !== DisplayType.DESKTOP) {
+			// 	resetPagination();
+			// }
 		}
-	}, [
-		isDesktop,
-		isTablet,
-		setDisplayType,
-		resetPagination,
-		fetchTodos,
-		displayType,
-	]);
+	}, [isDesktop, isTablet, setDisplayType, resetPagination, displayType]);
 
 	return { displayType };
 };
