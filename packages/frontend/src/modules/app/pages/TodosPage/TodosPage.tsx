@@ -1,75 +1,38 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TodoList } from '../../components/TodoList/TodoList';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
-import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
-import { useMediaQuery } from 'usehooks-ts';
-import { THEME } from '~shared/styles/constants';
-import {
-	buttonGroup,
-	paginationStyles,
-	searchFormStyles,
-	spinnerStyles,
-	todosContainerStyles,
-} from './TodosPage.styles';
+import { useFilterStore } from '~store/filter.store';
+import { Spinner } from '@blueprintjs/core';
+import { useSwitchDisplay } from '~shared/hooks/useSwitchDisplay';
+import { spinnerStyles, todosContainerStyles } from './TodosPage.styles';
 import { useInitialData } from '~shared/hooks/useInitialData';
-import { todoFilters } from '~shared/types/todoFilters.type';
+import { Search } from '~shared/components/search/search.component';
+import { FilterButtons } from '~modules/app/components/FilterButtons/FilterButtons';
 
 export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
-	const location = useLocation();
-	const {
-		todos,
-		pagination,
-		isLoading: todoLoading,
-		error: todoError,
-	} = useTodoStore();
+	const { todos, isLoading: todoLoading, error: todoError } = useTodoStore();
 	const { user, error: userError, isLoading: userLoading } = useUserStore();
+	const { filters } = useFilterStore();
+	const { displayType } = useSwitchDisplay();
+
 	useInitialData();
 
-	const isDesktop = useMediaQuery(
-		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	);
-	const isPhone = useMediaQuery(`(max-width: ${THEME.BREAKPOINTS.MOBILE})`);
-
-	const searchParams = new URLSearchParams(location.search);
-	const [searchInput, setSearchInput] = useState(
-		searchParams.get('search') || '',
-	);
-	const currentFilters = {
-		public: searchParams.get('public'),
-		status: searchParams.get('status'),
-		search: searchParams.get('search'),
-	};
-
 	const updateFilters = (
-		filterType: keyof todoFilters | 'page' | 'pageSize',
+		filterType: keyof typeof filters | 'page',
 		value: string | null,
 	): void => {
-		const updatedFilters = { ...currentFilters };
-
-		if (filterType === 'search') {
-			updatedFilters[filterType] = value;
-		} else {
-			updatedFilters[filterType] =
-				updatedFilters[filterType] === value ? null : value;
-		}
-
+		const updatedFilters = { ...filters, [filterType]: value };
 		const updatedParams = new URLSearchParams();
 		Object.entries(updatedFilters).forEach(([key, val]) => {
 			if (val !== null && val !== undefined && val !== '') {
-				updatedParams.set(key, val);
+				updatedParams.set(key, val.toString());
 			}
 		});
-
 		const queryString = updatedParams.toString();
 		navigate(queryString ? `?${queryString}` : '');
-	};
-
-	const handleSearch = (e: React.FormEvent): void => {
-		e.preventDefault();
-		updateFilters('search', searchInput);
 	};
 
 	const handlePageChange = (newPage: number): void => {
@@ -90,75 +53,23 @@ export const TodosPage: React.FC = () => {
 
 	return (
 		<div>
-			<form onSubmit={handleSearch} className={searchFormStyles}>
-				<InputGroup
-					type="text"
-					placeholder="Search todos..."
-					value={searchInput}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setSearchInput(e.target.value)
-					}
-					rightElement={
-						<Button type="submit" icon="search" minimal={true} />
-					}
-				/>
-			</form>
-			<ButtonGroup className={buttonGroup}>
-				<Button
-					icon={isPhone ? undefined : 'lock'}
-					onClick={() => updateFilters('public', 'false')}
-					active={currentFilters.public === 'false'}
-				>
-					Private
-				</Button>
-				<Button
-					icon={isPhone ? undefined : 'people'}
-					onClick={() => updateFilters('public', 'true')}
-					active={currentFilters.public === 'true'}
-				>
-					Public
-				</Button>
-				<Button
-					icon={isPhone ? undefined : 'tick'}
-					onClick={() => updateFilters('status', 'completed')}
-					active={currentFilters.status === 'completed'}
-				>
-					Completed
-				</Button>
-				<Button
-					icon={isPhone ? undefined : 'target'}
-					onClick={() => updateFilters('status', 'active')}
-					active={currentFilters.status === 'active'}
-				>
-					Active
-				</Button>
-			</ButtonGroup>
+			<Search
+				updateFilters={updateFilters}
+				defaultValue={filters.search}
+				placeholder="Search todos..."
+			/>
+			<FilterButtons
+				updateFilters={updateFilters}
+				displayType={displayType}
+			/>
 			<div className={todosContainerStyles}>
 				{todoLoading || userLoading ? (
 					<Spinner size={20} />
 				) : (
-					<>
-						<TodoList />
-						{isDesktop && (
-							<ButtonGroup className={paginationStyles}>
-								{[...Array(pagination.totalPages)].map(
-									(_, index) => (
-										<Button
-											key={index}
-											onClick={() =>
-												handlePageChange(index + 1)
-											}
-											active={
-												pagination.page === index + 1
-											}
-										>
-											{index + 1}
-										</Button>
-									),
-								)}
-							</ButtonGroup>
-						)}
-					</>
+					<TodoList
+						displayType={displayType}
+						handlePageChange={handlePageChange}
+					/>
 				)}
 			</div>
 		</div>

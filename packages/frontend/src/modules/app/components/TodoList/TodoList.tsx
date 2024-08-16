@@ -1,32 +1,25 @@
 import React from 'react';
 import { useTodoStore } from '~store/todo.store';
 import { useUserStore } from '~store/user.store';
-import { useMediaQuery } from 'usehooks-ts';
-import { THEME } from '~shared/styles/constants';
+import { useFilterStore } from '~store/filter.store';
 import { emptyStateStyles } from './TodoList.styles';
 import { CarouselView } from './TodoListViews/CarouselView/CarouselView';
 import { ListView } from './TodoListViews/ListView/ListView';
 import { TableView } from './TodoListViews/TableView/TableView';
 import { DisplayType } from '~shared/types/display.type';
 
-export const TodoList: React.FC = () => {
-	const { todos, pagination, fetchTodos } = useTodoStore();
+interface TodoListProps {
+	displayType: DisplayType;
+	handlePageChange: (newPage: number) => void;
+}
+
+export const TodoList: React.FC<TodoListProps> = ({
+	displayType,
+	handlePageChange,
+}) => {
+	const { todos, fetchTodos } = useTodoStore();
 	const user = useUserStore((state) => state.user);
-
-	const isDesktop = useMediaQuery(
-		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	);
-	const isTablet = useMediaQuery(
-		`(min-width: ${THEME.BREAKPOINTS.TABLET}) and (max-width: ${THEME.BREAKPOINTS.DESKTOP})`,
-	);
-
-	const getViewType = (): DisplayType => {
-		if (isDesktop) return DisplayType.DESKTOP;
-		if (isTablet) return DisplayType.TABLET;
-		return DisplayType.PHONE;
-	};
-
-	const viewType = getViewType();
+	const { pagination, setPagination } = useFilterStore();
 
 	if (todos.length === 0) {
 		return (
@@ -38,14 +31,21 @@ export const TodoList: React.FC = () => {
 
 	const handleLoadMore = (): void => {
 		if (pagination.page < pagination.totalPages) {
-			fetchTodos(undefined, pagination.page + 1, 3, true);
+			setPagination({ pageSize: pagination.pageSize + 3 });
+			fetchTodos();
 		}
 	};
 
 	const hasMoreTodos = pagination.page < pagination.totalPages;
 
 	const viewComponents = {
-		[DisplayType.DESKTOP]: <TableView todos={todos} userId={user.id} />,
+		[DisplayType.DESKTOP]: (
+			<TableView
+				todos={todos}
+				userId={user.id}
+				handlePageChange={handlePageChange}
+			/>
+		),
 		[DisplayType.TABLET]: (
 			<CarouselView
 				todos={todos}
@@ -64,5 +64,5 @@ export const TodoList: React.FC = () => {
 		),
 	};
 
-	return viewComponents[viewType];
+	return viewComponents[displayType];
 };
