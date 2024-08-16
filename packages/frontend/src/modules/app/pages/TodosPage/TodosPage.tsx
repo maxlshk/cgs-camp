@@ -8,7 +8,6 @@ import { ButtonGroup, Button, Spinner, InputGroup } from '@blueprintjs/core';
 import { useSwitchDisplay } from '~shared/hooks/useSwitchDisplay';
 import {
 	buttonGroup,
-	paginationStyles,
 	searchFormStyles,
 	spinnerStyles,
 	todosContainerStyles,
@@ -20,7 +19,7 @@ export const TodosPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { todos, isLoading: todoLoading, error: todoError } = useTodoStore();
 	const { user, error: userError, isLoading: userLoading } = useUserStore();
-	const { filters, pagination } = useFilterStore();
+	const { filters } = useFilterStore();
 	const { displayType } = useSwitchDisplay();
 
 	useInitialData();
@@ -140,28 +139,10 @@ export const TodosPage: React.FC = () => {
 				{todoLoading || userLoading ? (
 					<Spinner size={20} />
 				) : (
-					<>
-						<TodoList displayType={displayType} />
-						{displayType === DisplayType.DESKTOP && (
-							<ButtonGroup className={paginationStyles}>
-								{[...Array(pagination.totalPages)].map(
-									(_, index) => (
-										<Button
-											key={index}
-											onClick={() =>
-												handlePageChange(index + 1)
-											}
-											active={
-												pagination.page === index + 1
-											}
-										>
-											{index + 1}
-										</Button>
-									),
-								)}
-							</ButtonGroup>
-						)}
-					</>
+					<TodoList
+						displayType={displayType}
+						handlePageChange={handlePageChange}
+					/>
 				)}
 			</div>
 		</div>

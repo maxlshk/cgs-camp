@@ -29,7 +29,6 @@ export const useFilterStore = create<FilterState>((set) => ({
 			filters: { ...state.filters, ...newFilters },
 			pagination: { ...state.pagination, page: 1 },
 		}));
-		console.log('newFilters', newFilters);
 	},
 	setPagination: (newPagination): void =>
 		set((state) => ({
@@ -39,7 +38,7 @@ export const useFilterStore = create<FilterState>((set) => ({
 		set({ displayType: newDisplayType }),
 	resetPagination: (): void =>
 		set((state) => ({
-			pagination: { ...state.pagination, page: 1 },
+			pagination: { ...state.pagination, pageSize: 3 },
 		})),
 	setLastViewedIndex: (index: number): void =>
 		set({ lastViewedIndex: index }),

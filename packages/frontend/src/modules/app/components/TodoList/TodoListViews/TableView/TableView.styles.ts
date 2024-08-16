@@ -7,6 +7,12 @@ export const tableStyles = css`
 	border-collapse: collapse;
 `;
 
+export const paginationStyles = css`
+	margin-top: 1rem;
+	margin-left: auto;
+	margin-right: auto;
+`;
+
 export const headerStyles = css`
 	display: table-row;
 	background-color: ${COLORS.SECONDARY};

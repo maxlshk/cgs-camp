@@ -20,9 +20,3 @@ export const todosContainerStyles = css`
 	flex-direction: column;
 	align-items: center;
 `;
-
-export const paginationStyles = css`
-	margin-top: 1rem;
-	margin-left: auto;
-	margin-right: auto;
-`;

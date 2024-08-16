@@ -7,18 +7,19 @@ import { CarouselView } from './TodoListViews/CarouselView/CarouselView';
 import { ListView } from './TodoListViews/ListView/ListView';
 import { TableView } from './TodoListViews/TableView/TableView';
 import { DisplayType } from '~shared/types/display.type';
-// import { useSwitchDisplay } from '~shared/hooks/useSwitchDisplay';
 
-export const TodoList: React.FC<{ displayType: DisplayType }> = ({
-	displayType,
-}: {
+interface TodoListProps {
 	displayType: DisplayType;
+	handlePageChange: (newPage: number) => void;
+}
+
+export const TodoList: React.FC<TodoListProps> = ({
+	displayType,
+	handlePageChange,
 }) => {
-	const { todos } = useTodoStore();
+	const { todos, fetchTodos } = useTodoStore();
 	const user = useUserStore((state) => state.user);
 	const { pagination, setPagination } = useFilterStore();
-	// const { displayType } = useSwitchDisplay();
-	// const displayType = DisplayType.DESKTOP;
 
 	if (todos.length === 0) {
 		return (
@@ -30,14 +31,21 @@ export const TodoList: React.FC<{ displayType: DisplayType }> = ({
 
 	const handleLoadMore = (): void => {
 		if (pagination.page < pagination.totalPages) {
-			setPagination({ page: pagination.page + 1 });
+			setPagination({ pageSize: pagination.pageSize + 3 });
+			fetchTodos();
 		}
 	};
 
 	const hasMoreTodos = pagination.page < pagination.totalPages;
 
 	const viewComponents = {
-		[DisplayType.DESKTOP]: <TableView todos={todos} userId={user.id} />,
+		[DisplayType.DESKTOP]: (
+			<TableView
+				todos={todos}
+				userId={user.id}
+				handlePageChange={handlePageChange}
+			/>
+		),
 		[DisplayType.TABLET]: (
 			<CarouselView
 				todos={todos}

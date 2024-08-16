@@ -3,6 +3,7 @@ import { useMediaQuery } from 'usehooks-ts';
 import { THEME } from '~shared/styles/constants';
 import { useFilterStore } from '~store/filter.store';
 import { DisplayType } from '~shared/types/display.type';
+import { useNavigate } from 'react-router-dom';
 
 export const useSwitchDisplay = (): {
 	displayType: DisplayType;
@@ -14,11 +15,10 @@ export const useSwitchDisplay = (): {
 	const isTablet = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.TABLET}) and (max-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);
-
+	const navigate = useNavigate();
 	const { setDisplayType, resetPagination, displayType } = useFilterStore();
 
 	useEffect(() => {
-		console.log('useEffect');
 		let newDisplayType: DisplayType;
 		if (isDesktop) {
 			newDisplayType = DisplayType.DESKTOP;
@@ -30,9 +30,8 @@ export const useSwitchDisplay = (): {
 
 		if (newDisplayType !== displayType) {
 			setDisplayType(newDisplayType);
-			// if (newDisplayType !== DisplayType.DESKTOP) {
-			// 	resetPagination();
-			// }
+			resetPagination();
+			navigate('');
 		}
 	}, [isDesktop, isTablet, setDisplayType, resetPagination, displayType]);
 

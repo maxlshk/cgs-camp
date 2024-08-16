@@ -34,7 +34,6 @@ export const CarouselView: React.FC<CarouselViewProps> = ({
 	const goToPrevious = (): void => {
 		setCurrentIndex((prevIndex) => {
 			const newIndex = prevIndex > 0 ? prevIndex - 1 : prevIndex;
-			setLastViewedIndex(newIndex);
 			return newIndex;
 		});
 	};
@@ -43,14 +42,13 @@ export const CarouselView: React.FC<CarouselViewProps> = ({
 		setCurrentIndex((prevIndex) => {
 			const newIndex =
 				prevIndex < todos.length - 1 ? prevIndex + 1 : prevIndex;
-			setLastViewedIndex(newIndex);
 			return newIndex;
 		});
 	};
 
 	const handleLoadMore = (): void => {
-		onLoadMore();
 		setLastViewedIndex(currentIndex);
+		onLoadMore();
 	};
 
 	return (
