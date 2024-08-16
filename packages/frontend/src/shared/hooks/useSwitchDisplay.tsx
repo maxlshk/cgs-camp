@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 export const useSwitchDisplay = (): {
 	displayType: DisplayType;
 } => {
-	console.log('useSwitchDisplay');
 	const isDesktop = useMediaQuery(
 		`(min-width: ${THEME.BREAKPOINTS.DESKTOP})`,
 	);

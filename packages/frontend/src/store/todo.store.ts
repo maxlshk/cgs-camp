@@ -19,7 +19,6 @@ export const useTodoStore = create<TodoState>((set) => ({
 	error: null,
 	fetchTodos: async (): Promise<void> => {
 		set({ isLoading: true });
-		console.log('fetching todos');
 		try {
 			const { filters, pagination } = useFilterStore.getState();
 			const response = await todoService.getTodos(
@@ -27,7 +26,6 @@ export const useTodoStore = create<TodoState>((set) => ({
 				pagination.page,
 				pagination.pageSize,
 			);
-			console.log('response', response);
 			set({ todos: response.todos, isLoading: false });
 			useFilterStore.getState().setPagination(response.pagination);
 		} catch (error) {
