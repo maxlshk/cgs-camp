@@ -3,6 +3,7 @@ import 'dotenv/config';
 import bodyParser from 'body-parser';
 
 import AppRouter from './routes';
+import { isError } from './middleware/isError.middleware';
 
 const port = 3030;
 const app: Express = express();
@@ -10,8 +11,9 @@ const router = new AppRouter(app);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(isError);
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
 	res.send('Hello Node!');
 });
 
