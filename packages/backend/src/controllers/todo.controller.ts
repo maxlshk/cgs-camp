@@ -27,7 +27,7 @@ export class TodoController {
 		const todo = await this.todoService.createTodo({ ...req.body });
 		res.status(201).json({
 			message: 'Todo created successfully',
-			todoId: todo.id,
+			todo: todo,
 		});
 	}
 

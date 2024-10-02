@@ -10,7 +10,10 @@ export const validate = (
 	return (req: Request, res: Response, next: NextFunction): void => {
 		const { error }: { error?: ValidationError } = schema.validate(
 			req[source],
-			{ allowUnknown: source === 'query' },
+			{
+				allowUnknown: source === 'query',
+				stripUnknown: source === 'body' || source === 'params',
+			},
 		);
 
 		if (error) {
