@@ -1,11 +1,13 @@
 import { Response, Request } from 'express';
 import { TodoService } from '../services/todo.service';
+import { User } from '@prisma/client';
 
 export class TodoController {
 	constructor(private todoService: TodoService) {}
 
-	async getAllTodos(_req: Request, res: Response): Promise<void> {
-		const { todos, total } = await this.todoService.getTodos();
+	async getAllTodos(req: Request, res: Response): Promise<void> {
+		const user = req.user as User;
+		const { todos, total } = await this.todoService.getTodos(user.id);
 
 		res.json({
 			todos,
@@ -24,7 +26,10 @@ export class TodoController {
 	}
 
 	async createTodo(req: Request, res: Response): Promise<void> {
-		const todo = await this.todoService.createTodo({ ...req.body });
+		const todo = await this.todoService.createTodo(
+			req.body,
+			req.user as User,
+		);
 		res.status(201).json({
 			message: 'Todo created successfully',
 			todo: todo,
