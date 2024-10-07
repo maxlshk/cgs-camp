@@ -29,16 +29,23 @@ export class TodoService extends HttpService {
 
 	async addTodo(
 		todo: Omit<Todo, 'id'>,
-	): Promise<{ message: string; data: Todo }> {
-		const result = this.post<Todo>('/todos', todo);
+	): Promise<{ message: string; todo: Todo }> {
+		const result = this.post<{ message: string; todo: Todo }>(
+			'/todos',
+			todo,
+		);
+		console.log(result);
 		return result;
 	}
 
 	async updateTodo(
 		id: number,
 		updates: Omit<Todo, 'id'>,
-	): Promise<{ message: string; data: Todo }> {
-		const result = this.put<Todo>(`/todos/${id}`, updates);
+	): Promise<{ message: string; todo: Todo }> {
+		const result = this.put<{ message: string; todo: Todo }>(
+			`/todos/${id}`,
+			updates,
+		);
 		return result;
 	}
 

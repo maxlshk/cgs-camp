@@ -30,7 +30,8 @@ export const useTodoStore = create<TodoState>((set) => ({
 	},
 	addTodo: async (todo: Omit<Todo, 'id'>): Promise<void> => {
 		try {
-			const { data: newTodo } = await todoService.addTodo(todo);
+			const { todo: newTodo } = await todoService.addTodo(todo);
+			console.log(newTodo);
 			set((state) => ({ todos: [...state.todos, newTodo] }));
 		} catch (error) {
 			set({ error: 'Failed to add todo' });
@@ -41,7 +42,7 @@ export const useTodoStore = create<TodoState>((set) => ({
 		updates: Omit<Todo, 'id'>,
 	): Promise<void> => {
 		try {
-			const { data: updatedTodo } = await todoService.updateTodo(
+			const { todo: updatedTodo } = await todoService.updateTodo(
 				id,
 				updates,
 			);

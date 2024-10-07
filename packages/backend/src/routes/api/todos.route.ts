@@ -5,8 +5,11 @@ import { tryCatch } from '../../middleware/tryCatch.middleware';
 import { isExist } from '@/middleware/isExist.middleware';
 import { validate } from '@/middleware/validator.middleware';
 import { todoSchema } from '@/validation/todo/todo.schema';
+import { authenticateJwt } from '@/middleware/auth.middleware';
 
 const todosRouter: Router = Router();
+
+todosRouter.use(authenticateJwt);
 
 todosRouter.get(
 	'/all',

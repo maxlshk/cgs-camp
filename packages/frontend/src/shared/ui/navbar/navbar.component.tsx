@@ -37,16 +37,16 @@ export const Navbar = (): ReactElement => {
 									<NavLink
 										className="bp5-menu-item"
 										tabIndex={0}
-										to="/change-name"
+										to={ROUTER_KEYS.EDIT_PROFILE}
 									>
-										Change Name
+										Edit Profile
 									</NavLink>
 								</li>
 								<li>
 									<NavLink
 										className="bp5-menu-item"
 										tabIndex={0}
-										to="/change-password"
+										to={ROUTER_KEYS.CHANGE_PASSWORD}
 									>
 										Change Password
 									</NavLink>

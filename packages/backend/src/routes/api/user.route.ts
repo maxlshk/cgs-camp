@@ -39,7 +39,7 @@ router.post(
 );
 
 router.put(
-	'/edit',
+	'/edit-profile',
 	authenticateJwt,
 	validate(editProfileSchema, 'body'),
 	tryCatch(userController.editUser.bind(userController)),

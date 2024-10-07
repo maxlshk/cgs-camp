@@ -27,6 +27,7 @@ export class UserController {
 			message: 'User logged in successfully',
 			accessToken,
 			refreshToken,
+			user,
 		});
 	}
 
