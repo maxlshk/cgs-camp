@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { STORAGE_KEYS } from '~shared/keys';
 import { userService } from '~shared/services/user.service';
 import { User } from '~shared/types/user.type';
 
 interface UserState {
 	user: User | null;
 	isLoading: boolean;
+	accessToken: string | null;
+	refreshToken: string | null;
 	error: string | null;
 	getUser: () => Promise<void>;
 	verifyUser: (token: string) => Promise<string>;
@@ -20,6 +21,8 @@ interface UserState {
 	resetPassword: (token: string, newPassword: string) => Promise<string>;
 	editProfile: (changes: { name: string }) => Promise<string>;
 	logOut: () => Promise<string>;
+	setAccessToken: (token: string | null) => void;
+	setRefreshToken: (token: string | null) => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -27,6 +30,8 @@ export const useUserStore = create<UserState>()(
 		(set) => ({
 			user: null,
 			isLoading: false,
+			accessToken: null,
+			refreshToken: null,
 			error: null,
 			getUser: async (): Promise<void> => {
 				set({ isLoading: true });
@@ -66,15 +71,12 @@ export const useUserStore = create<UserState>()(
 						accessToken,
 						refreshToken,
 					} = await userService.logIn(user);
-					localStorage.setItem(
-						STORAGE_KEYS.ACCESS_TOKEN,
+					set({
+						user: receivedUser,
 						accessToken,
-					);
-					localStorage.setItem(
-						STORAGE_KEYS.REFRESH_TOKEN,
 						refreshToken,
-					);
-					set({ user: receivedUser, error: null });
+						error: null,
+					});
 					return message;
 				} catch (error) {
 					set({
@@ -183,11 +185,17 @@ export const useUserStore = create<UserState>()(
 					throw error;
 				}
 			},
+			setAccessToken: (token): void => set({ accessToken: token }),
+			setRefreshToken: (token): void => set({ refreshToken: token }),
 		}),
 		{
 			name: 'user-storage',
 			storage: createJSONStorage(() => localStorage),
-			partialize: (state) => ({ user: state.user }),
+			partialize: (state) => ({
+				user: state.user,
+				accessToken: state.accessToken,
+				refreshToken: state.refreshToken,
+			}),
 		},
 	),
 );

@@ -4,7 +4,8 @@ import axios, {
 	AxiosError,
 	InternalAxiosRequestConfig,
 } from 'axios';
-import { STORAGE_KEYS } from '~shared/keys';
+import { UESR_API_KEYS } from '~shared/keys';
+import { useUserStore } from '~store/user.store';
 
 interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 	_retry?: boolean;
@@ -24,9 +25,9 @@ export class HttpService {
 
 		this.axiosInstance.interceptors.request.use(
 			(config) => {
-				const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-				if (token) {
-					config.headers['Authorization'] = `Bearer ${token}`;
+				const { accessToken } = useUserStore.getState();
+				if (accessToken) {
+					config.headers['Authorization'] = `Bearer ${accessToken}`;
 				}
 				return config;
 			},
@@ -41,26 +42,47 @@ export class HttpService {
 				if (error.response?.status === 401 && !originalRequest._retry) {
 					originalRequest._retry = true;
 					try {
-						const refreshToken = localStorage.getItem(
-							STORAGE_KEYS.REFRESH_TOKEN,
-						);
+						const {
+							refreshToken,
+							setAccessToken,
+							setRefreshToken,
+							logOut,
+						} = useUserStore.getState();
+
+						if (!refreshToken) {
+							// No refresh token, log out and redirect
+							logOut();
+							window.location.href = '/login';
+							return Promise.reject(error);
+						}
+
+						// Make a direct API call to refresh the token
 						const response = await axios.post(
-							`${baseURL}/user/refresh-token`,
+							`${this.axiosInstance.defaults.baseURL}${UESR_API_KEYS.REFRESH_TOKEN}`,
 							{ refreshToken },
 						);
-						const { accessToken } = response.data;
-						localStorage.setItem(
-							STORAGE_KEYS.ACCESS_TOKEN,
-							accessToken,
-						);
+
+						const {
+							accessToken: newAccessToken,
+							refreshToken: newRefreshToken,
+						} = response.data;
+
+						// Update tokens in the store
+						setAccessToken(newAccessToken);
+						setRefreshToken(newRefreshToken);
+
+						// Update the authorization header
 						if (originalRequest.headers) {
 							originalRequest.headers['Authorization'] =
-								`Bearer ${accessToken}`;
+								`Bearer ${newAccessToken}`;
 						}
+
+						// Retry the original request
 						return this.axiosInstance(originalRequest);
 					} catch (refreshError) {
-						localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-						localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+						// Refresh token failed, log out and redirect
+						const { logOut } = useUserStore.getState();
+						logOut();
 						window.location.href = '/login';
 						return Promise.reject(refreshError);
 					}

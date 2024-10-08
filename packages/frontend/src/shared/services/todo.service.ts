@@ -1,6 +1,7 @@
 import { HttpService } from './http.service';
 import { Todo } from '../types/todo.type';
 import { Pagination } from '~shared/types/pagination.type';
+import { API_BASE, TODO_API_KEYS } from '~shared/keys';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,30 +11,27 @@ if (!API_URL) {
 
 export class TodoService extends HttpService {
 	constructor() {
-		super(API_URL);
+		super(`${API_URL}${API_BASE.TODOS}`);
 	}
 
 	async getTodos(): Promise<{ todos: Todo[]; pagination: Pagination }> {
 		const params = new URLSearchParams();
 
 		const queryString = params.toString();
-		const url = `/todos/all${queryString ? `?${queryString}` : ''}`;
+		const url = `${TODO_API_KEYS.ALL}${queryString ? `?${queryString}` : ''}`;
 
 		return this.get<{ todos: Todo[]; pagination: Pagination }>(url);
 	}
 
 	async getMyTodos(): Promise<Todo[]> {
-		const todos = this.get<Todo[]>('/todos/my');
+		const todos = this.get<Todo[]>(TODO_API_KEYS.MY);
 		return todos;
 	}
 
 	async addTodo(
 		todo: Omit<Todo, 'id'>,
 	): Promise<{ message: string; todo: Todo }> {
-		const result = this.post<{ message: string; todo: Todo }>(
-			'/todos',
-			todo,
-		);
+		const result = this.post<{ message: string; todo: Todo }>('', todo);
 		console.log(result);
 		return result;
 	}
@@ -43,14 +41,14 @@ export class TodoService extends HttpService {
 		updates: Omit<Todo, 'id'>,
 	): Promise<{ message: string; todo: Todo }> {
 		const result = this.put<{ message: string; todo: Todo }>(
-			`/todos/${id}`,
+			id.toString(),
 			updates,
 		);
 		return result;
 	}
 
 	async deleteTodo(id: number): Promise<void> {
-		return this.delete(`/todos/${id}`);
+		return this.delete(id.toString());
 	}
 }
 

@@ -1,6 +1,6 @@
 import { HttpService } from './http.service';
 import { User } from '../types/user.type';
-import { STORAGE_KEYS } from '~shared/keys';
+import { API_BASE, UESR_API_KEYS } from '~shared/keys';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,21 +10,24 @@ if (!API_URL) {
 
 export class UserService extends HttpService {
 	constructor() {
-		super(API_URL);
+		super(`${API_URL}${API_BASE.USER}`);
 	}
 
 	async getUser(): Promise<User> {
-		return this.get<User>('/user/me');
+		return this.get<User>(UESR_API_KEYS.PROFILE);
 	}
 
 	async verifyUser(token: string): Promise<{ message: string }> {
-		return this.get<{ message: string }>(`/user/verify/${token}`);
+		return this.get<{ message: string }>(`${UESR_API_KEYS.VERIFY}${token}`);
 	}
 
 	async signUp(
 		user: Partial<User>,
 	): Promise<{ message: string; user: User }> {
-		return this.post<{ message: string; user: User }>('/user/signup', user);
+		return this.post<{ message: string; user: User }>(
+			UESR_API_KEYS.SIGNUP,
+			user,
+		);
 	}
 
 	async logIn(user: Partial<User>): Promise<{
@@ -38,7 +41,7 @@ export class UserService extends HttpService {
 			user: User;
 			accessToken: string;
 			refreshToken: string;
-		}>('/user/login', user);
+		}>(UESR_API_KEYS.LOGIN, user);
 		return response;
 	}
 
@@ -46,14 +49,14 @@ export class UserService extends HttpService {
 		currentPassword: string,
 		newPassword: string,
 	): Promise<{ message: string }> {
-		return this.post<{ message: string }>('/user/change-password', {
+		return this.post<{ message: string }>(UESR_API_KEYS.CHANGE_PASSWORD, {
 			currentPassword,
 			newPassword,
 		});
 	}
 
 	async forgotPassword(email: string): Promise<{ message: string }> {
-		return this.post<{ message: string }>('/user/forgot-password', {
+		return this.post<{ message: string }>(UESR_API_KEYS.FORGOT_PASSWORD, {
 			email,
 		});
 	}
@@ -62,7 +65,7 @@ export class UserService extends HttpService {
 		token: string,
 		newPassword: string,
 	): Promise<{ message: string }> {
-		return this.post<{ message: string }>('/user/reset-password', {
+		return this.post<{ message: string }>(UESR_API_KEYS.RESET_PASSWORD, {
 			token,
 			newPassword,
 		});
@@ -72,23 +75,13 @@ export class UserService extends HttpService {
 		name: string;
 	}): Promise<{ message: string; editedUser: User }> {
 		return this.put<{ message: string; editedUser: User }>(
-			'/user/edit-profile',
+			UESR_API_KEYS.EDIT_PROFILE,
 			changes,
 		);
 	}
 
 	async logOut(): Promise<{ message: string }> {
 		return this.post<{ message: string }>('/user/logout');
-	}
-
-	async refreshToken(): Promise<{ accessToken: string }> {
-		const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-		if (!refreshToken) {
-			throw new Error('No refresh token available');
-		}
-		return this.post<{ accessToken: string }>('/user/refresh-token', {
-			refreshToken,
-		});
 	}
 }
 

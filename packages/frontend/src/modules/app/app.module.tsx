@@ -6,10 +6,10 @@ import { useUserStore } from '~store/user.store';
 
 const App = (): React.ReactElement => {
 	const { getUser } = useUserStore();
-	const { aToken, isLoading } = useAuth();
+	const { accessToken, isLoading } = useAuth();
 
 	useEffect(() => {
-		if (aToken) {
+		if (accessToken) {
 			getUser();
 		}
 	}, []);
