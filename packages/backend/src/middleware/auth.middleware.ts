@@ -7,6 +7,7 @@ import {
 } from 'passport-jwt';
 import { PrismaClient, User } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest } from '@/types/request.type';
 
 const prisma = new PrismaClient();
 
@@ -82,7 +83,7 @@ export const authenticateJwt = (
 			req.user = user;
 			next();
 		},
-	)(req, res, next);
+	)(req as AuthenticatedRequest, res, next);
 };
 
 export const authorizeUser = async (

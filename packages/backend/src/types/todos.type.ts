@@ -1,5 +1,3 @@
-// TODO: Put a real types here
-
 export type TodoType = {
 	id: number;
 	title: string;
@@ -7,5 +5,5 @@ export type TodoType = {
 	isCompleted: boolean;
 	isPrivate: boolean;
 	createdAt: Date;
-	// userId: number;
+	userId: number;
 };

@@ -6,6 +6,8 @@ import { isExist } from '@/middleware/isExist.middleware';
 import { validate } from '@/middleware/validator.middleware';
 import { todoSchema } from '@/validation/todo/todo.schema';
 import { authenticateJwt } from '@/middleware/auth.middleware';
+import { todoQuerySchema } from '@/validation/todo/todo-query.schema';
+import filtersMiddleware from '@/middleware/filters.middleware';
 
 const todosRouter: Router = Router();
 
@@ -13,7 +15,9 @@ todosRouter.use(authenticateJwt);
 
 todosRouter.get(
 	'/all',
-	tryCatch(todoController.getAllTodos.bind(todoController)),
+	validate(todoQuerySchema, 'query'),
+	filtersMiddleware,
+	tryCatch(todoController.getTodos.bind(todoController)),
 );
 
 todosRouter.get(

@@ -1,17 +1,24 @@
-import { PrismaClient, Todo, User } from '@prisma/client';
+import { Prisma, PrismaClient, Todo, User } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export class TodoService {
-	async getTodos(userId: number): Promise<{ todos: Todo[]; total: number }> {
+	async getTodos(
+		userId: number,
+		filters: Prisma.TodoWhereInput,
+	): Promise<{ todos: Todo[]; total: number }> {
+		filters.AND = [
+			{
+				OR: [{ isPrivate: false }, { userId: userId }],
+			},
+		];
+
 		const [todos, total] = await Promise.all([
 			prisma.todo.findMany({
-				where: {
-					OR: [{ isPrivate: false }, { userId }],
-				},
+				where: filters,
 				orderBy: { createdAt: 'desc' },
 			}),
-			prisma.todo.count(),
+			prisma.todo.count({ where: filters }),
 		]);
 
 		return { todos, total };

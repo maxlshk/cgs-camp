@@ -1,13 +1,19 @@
 import { Response, Request } from 'express';
 import { TodoService } from '../services/todo.service';
 import { User } from '@prisma/client';
+import { AuthenticatedRequest, FilteredRequest } from '@/types/request.type';
 
 export class TodoController {
 	constructor(private todoService: TodoService) {}
 
-	async getAllTodos(req: Request, res: Response): Promise<void> {
-		const user = req.user as User;
-		const { todos, total } = await this.todoService.getTodos(user.id);
+	async getTodos(req: Request, res: Response): Promise<void> {
+		const user = (req as AuthenticatedRequest).user;
+		const filters = (req as FilteredRequest).filters || {};
+
+		const { todos, total } = await this.todoService.getTodos(
+			user.id,
+			filters,
+		);
 
 		res.json({
 			todos,
