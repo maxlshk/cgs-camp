@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { STORAGE_KEYS } from '~shared/keys';
 import { userService } from '~shared/services/user.service';
 import { User } from '~shared/types/user.type';
 
@@ -77,6 +78,14 @@ export const useUserStore = create<UserState>()(
 						refreshToken,
 						error: null,
 					});
+					localStorage.setItem(
+						STORAGE_KEYS.ACCESS_TOKEN,
+						accessToken,
+					);
+					localStorage.setItem(
+						STORAGE_KEYS.REFRESH_TOKEN,
+						refreshToken,
+					);
 					return message;
 				} catch (error) {
 					set({
@@ -176,9 +185,9 @@ export const useUserStore = create<UserState>()(
 			logOut: async (): Promise<string> => {
 				try {
 					const { message } = await userService.logOut();
-					localStorage.removeItem('accessToken');
-					localStorage.removeItem('refreshToken');
-					set({ user: null });
+					localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+					localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+					set({ user: null, accessToken: null, refreshToken: null });
 					return message;
 				} catch (error) {
 					set({ error: 'Failed to log out' });
@@ -189,7 +198,7 @@ export const useUserStore = create<UserState>()(
 			setRefreshToken: (token): void => set({ refreshToken: token }),
 		}),
 		{
-			name: 'user-storage',
+			name: STORAGE_KEYS.USER_STORAGE_KEY,
 			storage: createJSONStorage(() => localStorage),
 			partialize: (state) => ({
 				user: state.user,

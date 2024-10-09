@@ -15,6 +15,7 @@ export const enum ROUTER_KEYS {
 export const STORAGE_KEYS = Object.freeze({
 	ACCESS_TOKEN: 'accessToken',
 	REFRESH_TOKEN: 'refreshToken',
+	USER_STORAGE_KEY: 'user_stroage',
 });
 
 export const enum API_BASE {
