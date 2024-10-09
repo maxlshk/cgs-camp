@@ -2,6 +2,7 @@ import { HttpService } from './http.service';
 import { Todo } from '../types/todo.type';
 import { Pagination } from '~shared/types/pagination.type';
 import { API_BASE, TODO_API_KEYS } from '~shared/keys';
+import { todoFilters } from '~shared/types/todo-filters.type';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,8 +15,15 @@ export class TodoService extends HttpService {
 		super(`${API_URL}${API_BASE.TODOS}`);
 	}
 
-	async getTodos(): Promise<{ todos: Todo[]; pagination: Pagination }> {
+	async getTodos(
+		filters: Partial<todoFilters>,
+	): Promise<{ todos: Todo[]; pagination: Pagination }> {
 		const params = new URLSearchParams();
+		Object.entries(filters || {}).forEach(([key, value]) => {
+			if (value) {
+				params.append(key, value);
+			}
+		});
 
 		const queryString = params.toString();
 		const url = `${TODO_API_KEYS.ALL}${queryString ? `?${queryString}` : ''}`;

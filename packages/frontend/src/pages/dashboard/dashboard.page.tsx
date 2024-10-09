@@ -4,14 +4,18 @@ import { Spinner } from '@blueprintjs/core';
 import { useDisplayType } from '~shared/hooks/useDisplayType';
 import { useTodoStore } from '~store/todo.store';
 import { spinnerStyles, todosContainerStyles } from './dashboard.styles';
+import { Filters } from '~shared/ui/filters/filters.component';
+import { Search } from '~shared/components/search/search.component';
+import { useFilters } from '~shared/hooks/useFilters';
 
 export const Dashboard: React.FC = () => {
 	const { fetchTodos, isLoading, error } = useTodoStore();
 	const { displayType } = useDisplayType();
+	const { currentFilters, updateFilters } = useFilters();
 
 	useEffect(() => {
-		fetchTodos();
-	}, [fetchTodos]);
+		fetchTodos(currentFilters);
+	}, [fetchTodos, currentFilters]);
 
 	if (error) {
 		return <div>Error: {error}</div>;
@@ -19,6 +23,15 @@ export const Dashboard: React.FC = () => {
 
 	return (
 		<div className={todosContainerStyles}>
+			<Search
+				updateFilters={updateFilters}
+				defaultValue={currentFilters.search}
+				placeholder="Search todos..."
+			/>
+			<Filters
+				currentFilters={currentFilters}
+				updateFilters={updateFilters}
+			/>
 			{isLoading ? (
 				<div className={spinnerStyles}>
 					<Spinner size={20} />
