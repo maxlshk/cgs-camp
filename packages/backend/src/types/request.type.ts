@@ -7,4 +7,10 @@ export interface AuthenticatedRequest extends Request {
 
 export interface FilteredRequest extends AuthenticatedRequest {
 	filters?: Prisma.TodoWhereInput;
+	pagination?: Pagination;
+}
+
+export interface Pagination {
+	skip?: number;
+	take?: number;
 }

@@ -1,3 +1,4 @@
+import { Pagination } from '@/types/request.type';
 import { Prisma, PrismaClient, Todo, User } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -6,6 +7,7 @@ export class TodoService {
 	async getTodos(
 		userId: number,
 		filters: Prisma.TodoWhereInput,
+		pagination: Pagination,
 	): Promise<{ todos: Todo[]; total: number }> {
 		filters.AND = [
 			{
@@ -17,6 +19,8 @@ export class TodoService {
 			prisma.todo.findMany({
 				where: filters,
 				orderBy: { createdAt: 'desc' },
+				skip: pagination?.skip,
+				take: pagination?.take,
 			}),
 			prisma.todo.count({ where: filters }),
 		]);

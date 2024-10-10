@@ -40,6 +40,31 @@ export const filtersMiddleware = (
 
 	(req as FilteredRequest).filters = filters;
 
+	const pagination = {} as { skip?: number; take?: number };
+
+	const defaultLimit = 5;
+
+	let page = 1;
+	if (typeof query.page === 'string') {
+		const parsedPage = parseInt(query.page, 10);
+		if (!isNaN(parsedPage) && parsedPage > 0) {
+			page = parsedPage;
+		}
+	}
+
+	let limit = defaultLimit;
+	if (typeof query.limit === 'string') {
+		const parsedLimit = parseInt(query.limit, 10);
+		if (!isNaN(parsedLimit) && parsedLimit > 0) {
+			limit = parsedLimit;
+		}
+	}
+
+	pagination.skip = (page - 1) * limit;
+	pagination.take = limit;
+
+	(req as FilteredRequest).pagination = pagination;
+
 	next();
 };
 

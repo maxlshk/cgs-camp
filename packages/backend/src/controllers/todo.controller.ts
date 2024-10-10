@@ -9,17 +9,20 @@ export class TodoController {
 	async getTodos(req: Request, res: Response): Promise<void> {
 		const user = (req as AuthenticatedRequest).user;
 		const filters = (req as FilteredRequest).filters || {};
+		const pagination = (req as FilteredRequest).pagination || {};
 
 		const { todos, total } = await this.todoService.getTodos(
 			user.id,
 			filters,
+			pagination,
 		);
 
 		res.json({
 			todos,
 			pagination: {
 				total,
-				// ... other pagination data will be added in task 6
+				page: (pagination?.skip ?? 0) / (pagination?.take ?? 10) + 1,
+				limit: pagination?.take ?? 10,
 			},
 		});
 	}
