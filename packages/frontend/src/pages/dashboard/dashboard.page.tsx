@@ -11,6 +11,7 @@ import {
 import { Filters } from '~shared/ui/filters/filters.component';
 import { Search } from '~shared/components/search/search.component';
 import { useFilters } from '~shared/hooks/useFilters';
+import { DisplayType } from '~shared/types/display.type';
 
 export const Dashboard: React.FC = () => {
 	const { fetchTodos, isLoading, error } = useTodoStore();
@@ -18,8 +19,9 @@ export const Dashboard: React.FC = () => {
 	const { currentFilters, updateFilters } = useFilters();
 
 	useEffect(() => {
-		fetchTodos(currentFilters);
-	}, [fetchTodos, currentFilters]);
+		const append = displayType !== DisplayType.DESKTOP;
+		fetchTodos(currentFilters, append);
+	}, [fetchTodos, currentFilters, displayType]);
 
 	if (error) {
 		return <div>Error: {error}</div>;

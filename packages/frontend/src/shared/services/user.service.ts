@@ -18,7 +18,9 @@ export class UserService extends HttpService {
 	}
 
 	async verifyUser(token: string): Promise<{ message: string }> {
-		return this.get<{ message: string }>(`${UESR_API_KEYS.VERIFY}${token}`);
+		return this.get<{ message: string }>(
+			`${UESR_API_KEYS.VERIFY}/${token}`,
+		);
 	}
 
 	async signUp(

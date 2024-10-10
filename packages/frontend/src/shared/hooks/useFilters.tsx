@@ -8,6 +8,7 @@ import {
 export const useFilters = (): {
 	currentFilters: todoFilters;
 	updateFilters: filterUpdateFunction;
+	resetFilters: () => void;
 } => {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -18,6 +19,7 @@ export const useFilters = (): {
 		() => ({
 			private: searchParams.get('private'),
 			status: searchParams.get('status'),
+			page: searchParams.get('page') || '1',
 			search: searchParams.get('search') || '',
 		}),
 		[location.search],
@@ -47,8 +49,13 @@ export const useFilters = (): {
 		navigate(queryString ? `?${queryString}` : '');
 	};
 
+	const resetFilters = (): void => {
+		navigate('');
+	};
+
 	return {
 		currentFilters,
 		updateFilters,
+		resetFilters,
 	};
 };

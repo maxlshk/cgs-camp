@@ -9,10 +9,14 @@ interface TodoState {
 	pagination: Pagination;
 	isLoading: boolean;
 	error: string | null;
-	fetchTodos: (filters?: Partial<todoFilters>) => Promise<void>;
+	fetchTodos: (
+		filters?: Partial<todoFilters>,
+		append?: boolean,
+	) => Promise<void>;
 	addTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
 	updateTodo: (id: number, updates: Partial<Todo>) => Promise<void>;
 	deleteTodo: (id: number) => Promise<void>;
+	resetTodos: () => void;
 }
 
 export const useTodoStore = create<TodoState>((set) => ({
@@ -20,11 +24,21 @@ export const useTodoStore = create<TodoState>((set) => ({
 	pagination: null,
 	isLoading: false,
 	error: null,
-	fetchTodos: async (filters: Partial<todoFilters>): Promise<void> => {
+	fetchTodos: async (
+		filters: Partial<todoFilters>,
+		append = false,
+	): Promise<void> => {
 		set({ isLoading: true });
 		try {
-			const { todos, pagination } = await todoService.getTodos(filters);
-			set({ todos, pagination, isLoading: false });
+			const { todos: fetchedTodos, pagination } =
+				await todoService.getTodos(filters);
+			set((state) => ({
+				todos: append
+					? [...state.todos, ...fetchedTodos]
+					: fetchedTodos,
+				pagination,
+				isLoading: false,
+			}));
 		} catch (error) {
 			set({ error: 'Failed to fetch todos', isLoading: false });
 		}
@@ -64,5 +78,8 @@ export const useTodoStore = create<TodoState>((set) => ({
 		} catch (error) {
 			set({ error: 'Failed to delete todo' });
 		}
+	},
+	resetTodos: (): void => {
+		set({ todos: [], pagination: null, error: null });
 	},
 }));

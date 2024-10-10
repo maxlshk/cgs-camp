@@ -21,8 +21,9 @@ export class TodoController {
 			todos,
 			pagination: {
 				total,
-				page: (pagination?.skip ?? 0) / (pagination?.take ?? 10) + 1,
-				limit: pagination?.take ?? 10,
+				totalPages: Math.ceil(total / (pagination?.take ?? 5)),
+				page: (pagination?.skip ?? 0) / (pagination?.take ?? 5) + 1,
+				limit: pagination?.take ?? 5,
 			},
 		});
 	}

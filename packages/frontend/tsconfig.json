@@ -43,29 +43,8 @@
 			"~/*": [
 				"src/*"
 			],
-			"~layouts/*": [
-				"src/modules/layouts/*"
-			],
 			"~pages/*": [
 				"src/pages/*"
-			],
-			"~dashboard/*": [
-				"src/pages/dashboard/*"
-			],
-			"~create-todo/*": [
-				"src/pages/create-todo/*"
-			],
-			"~edit-todo/*": [
-				"src/pages/edit-todo/*"
-			],
-			"~interfaces/*": [
-				"src/shared/types/*"
-			],
-			"~types/*": [
-				"src/shared/types/*"
-			],
-			"~hooks/*": [
-				"src/shared/hooks/*"
 			]
 		}
 	},

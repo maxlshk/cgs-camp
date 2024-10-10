@@ -6,6 +6,7 @@ export interface Todo {
 	isCompleted: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	userId: number;
 }
 
 export type ViewType = 'table' | 'card' | 'list';

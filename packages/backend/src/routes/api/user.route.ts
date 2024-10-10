@@ -46,7 +46,7 @@ router.put(
 );
 
 router.get(
-	'/verify/:id',
+	'/verify/:token',
 	tryCatch(userController.verifyAccount.bind(userController)),
 );
 

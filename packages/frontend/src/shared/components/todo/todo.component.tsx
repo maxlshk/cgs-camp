@@ -9,9 +9,10 @@ import { ROUTER_KEYS } from '~shared/keys';
 interface TodoElementProps {
 	todo: TodoType;
 	view: ViewType;
+	editable: boolean;
 }
 
-export const Todo: React.FC<TodoElementProps> = ({ todo, view }) => {
+export const Todo: React.FC<TodoElementProps> = ({ todo, view, editable }) => {
 	const { updateTodo, deleteTodo } = useTodoStore();
 	const navigator = useNavigate();
 
@@ -32,6 +33,7 @@ export const Todo: React.FC<TodoElementProps> = ({ todo, view }) => {
 				checked={todo.isCompleted}
 				onChange={handleComplete}
 				label={todo.isCompleted ? 'Completed' : 'Not Completed'}
+				disabled={!editable}
 			/>
 			<div>
 				<Button
@@ -39,12 +41,14 @@ export const Todo: React.FC<TodoElementProps> = ({ todo, view }) => {
 					icon={view == 'list' ? 'edit' : undefined}
 					text={view == 'list' ? '' : 'Edit'}
 					onClick={handleEdit}
+					disabled={!editable}
 				/>
 				<Button
 					intent={Intent.DANGER}
 					icon={view == 'list' ? 'trash' : undefined}
 					text={view == 'list' ? '' : 'Delete'}
 					onClick={handleDelete}
+					disabled={!editable}
 				/>
 			</div>
 		</>

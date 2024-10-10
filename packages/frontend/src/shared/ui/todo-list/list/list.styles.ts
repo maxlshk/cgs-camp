@@ -4,12 +4,12 @@ import { THEME, COLORS } from '~shared/styles/constants';
 export const listStyles = css`
 	display: flex;
 	flex-direction: column;
+	margin-bottom: 70px;
 `;
 
 export const paginationControlsStyles = css`
 	display: flex;
 	justify-content: center;
-	margin-top: ${THEME.SPACING.LARGE};
 	padding: ${THEME.SPACING.MEDIUM} 0;
 
 	button {

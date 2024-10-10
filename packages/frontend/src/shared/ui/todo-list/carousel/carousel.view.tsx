@@ -7,11 +7,20 @@ import {
 	rightControlsStyles,
 } from './carousel.styles';
 import { useTodoStore } from '~store/todo.store';
+import { useFilters } from '~shared/hooks/useFilters';
 
-export const Carousel: React.FC = () => {
-	const { todos } = useTodoStore();
+interface CarouselViewProps {
+	userId: number;
+}
 
-	const [currentIndex, setCurrentIndex] = useState(0);
+export const CarouselView: React.FC<CarouselViewProps> = ({ userId }) => {
+	const { todos, pagination } = useTodoStore();
+	const { updateFilters } = useFilters();
+
+	const [currentIndex, setCurrentIndex] = useState(
+		(pagination.page - 1) * pagination.limit,
+	);
+	const hasMorePages = pagination.page < pagination.totalPages;
 
 	const goToPrevious = (): void => {
 		setCurrentIndex((prevIndex) => {
@@ -37,15 +46,33 @@ export const Carousel: React.FC = () => {
 			/>
 			<div className={cardStyles}>
 				{todos[currentIndex] && (
-					<TodoElement todo={todos[currentIndex]} view="card" />
+					<TodoElement
+						todo={todos[currentIndex]}
+						view="card"
+						editable={todos[currentIndex].userId == userId}
+					/>
 				)}
 			</div>
 			<div className={rightControlsStyles}>
-				<Button
-					icon="chevron-right"
-					onClick={goToNext}
-					disabled={currentIndex === todos.length - 1}
-				/>
+				{currentIndex === todos.length - 1 && hasMorePages ? (
+					<Button
+						onClick={() =>
+							updateFilters(
+								'page',
+								(pagination.page + 1).toString(),
+							)
+						}
+						disabled={!hasMorePages}
+					>
+						Load More
+					</Button>
+				) : (
+					<Button
+						icon="chevron-right"
+						onClick={goToNext}
+						disabled={currentIndex === todos.length - 1}
+					/>
+				)}
 			</div>
 		</div>
 	);
