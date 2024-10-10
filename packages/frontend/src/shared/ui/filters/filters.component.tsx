@@ -1,6 +1,5 @@
 import { ButtonGroup, Button } from '@blueprintjs/core';
 import React from 'react';
-import { buttonGroup } from './filters.styles';
 import {
 	filterUpdateFunction,
 	todoFilters,
@@ -16,7 +15,7 @@ export const Filters: React.FC<FiltersProps> = ({
 	updateFilters,
 }) => {
 	return (
-		<ButtonGroup className={buttonGroup}>
+		<ButtonGroup>
 			<Button
 				icon="person"
 				onClick={() => updateFilters('private', 'true')}

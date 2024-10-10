@@ -24,7 +24,6 @@ export const useTodoStore = create<TodoState>((set) => ({
 		set({ isLoading: true });
 		try {
 			const { todos, pagination } = await todoService.getTodos(filters);
-			console.log(todos);
 			set({ todos, pagination, isLoading: false });
 		} catch (error) {
 			set({ error: 'Failed to fetch todos', isLoading: false });
@@ -33,7 +32,6 @@ export const useTodoStore = create<TodoState>((set) => ({
 	addTodo: async (todo: Omit<Todo, 'id'>): Promise<void> => {
 		try {
 			const { todo: newTodo } = await todoService.addTodo(todo);
-			console.log(newTodo);
 			set((state) => ({ todos: [...state.todos, newTodo] }));
 		} catch (error) {
 			set({ error: 'Failed to add todo' });

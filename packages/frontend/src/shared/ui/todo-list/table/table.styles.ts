@@ -5,6 +5,7 @@ export const tableStyles = css`
 	display: table;
 	width: 100%;
 	border-collapse: collapse;
+	border: 2px solid ${COLORS.BACKGROUND};
 `;
 
 export const paginationStyles = css`

@@ -85,13 +85,23 @@ export const tableRowStyles = css`
 `;
 
 export const cardStyles = css`
-	flex: 0 0 250px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	scroll-snap-align: start;
 	background-color: white;
+	font-size: ${THEME.FONT_SIZES.MEDIUM};
 	border: 1px solid ${COLORS.BORDER};
 	border-radius: 4px;
 	padding: ${THEME.SPACING.MEDIUM};
-	margin-right: ${THEME.SPACING.MEDIUM};
+
+	> * {
+		&:last-child {
+			display: flex;
+			gap: ${THEME.SPACING.SMALL};
+			margin-top: ${THEME.SPACING.MEDIUM};
+		}
+	}
 `;
 
 export const listItemStyles = css`
@@ -100,6 +110,20 @@ export const listItemStyles = css`
 	align-items: center;
 	padding: ${THEME.SPACING.MEDIUM};
 	border-bottom: 1px solid ${COLORS.BORDER};
+
+	> * {
+		width: 30%;
+		display: flex;
+		justify-content: center;
+
+		&:first-child {
+			flex-direction: column;
+		}
+
+		&:last-child {
+			gap: ${THEME.SPACING.SMALL};
+		}
+	}
 
 	&:last-child {
 		border-bottom: none;

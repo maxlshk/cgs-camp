@@ -34,12 +34,18 @@ export const Todo: React.FC<TodoElementProps> = ({ todo, view }) => {
 				label={todo.isCompleted ? 'Completed' : 'Not Completed'}
 			/>
 			<div>
-				<Button intent={Intent.PRIMARY} onClick={handleEdit}>
-					Edit
-				</Button>
-				<Button intent={Intent.DANGER} onClick={handleDelete}>
-					Delete
-				</Button>
+				<Button
+					intent={Intent.PRIMARY}
+					icon={view == 'list' ? 'edit' : undefined}
+					text={view == 'list' ? '' : 'Edit'}
+					onClick={handleEdit}
+				/>
+				<Button
+					intent={Intent.DANGER}
+					icon={view == 'list' ? 'trash' : undefined}
+					text={view == 'list' ? '' : 'Delete'}
+					onClick={handleDelete}
+				/>
 			</div>
 		</>
 	);

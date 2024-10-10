@@ -40,7 +40,6 @@ export class TodoService extends HttpService {
 		todo: Omit<Todo, 'id'>,
 	): Promise<{ message: string; todo: Todo }> {
 		const result = this.post<{ message: string; todo: Todo }>('', todo);
-		console.log(result);
 		return result;
 	}
 

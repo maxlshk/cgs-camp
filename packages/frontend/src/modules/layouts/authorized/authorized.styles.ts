@@ -1,10 +1,19 @@
 import { COLORS, THEME } from '~shared/styles/constants';
 import { css } from '@emotion/css';
 
+export const authorizedStyles = css`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-height: 100vh;
+	gap: ${THEME.SPACING.LARGE};
+	margin: 0 auto;
+	background-color: ${COLORS.BACKGROUND};
+`;
+
 export const navStyles = css`
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: ${THEME.SPACING.LARGE};
 `;
 
 export const navButtonContainerStyles = css`
@@ -23,8 +32,8 @@ export const linkStyles = css`
 `;
 
 export const contentStyles = css`
-	margin-top: ${THEME.SPACING.MEDIUM};
 	width: 100%;
+	display: flex;
 	flex-grow: 1;
 	background-color: white;
 	border-radius: 4px;
