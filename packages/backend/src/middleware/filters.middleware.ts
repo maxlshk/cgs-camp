@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { ParsedQs } from 'qs';
 import { Prisma } from '@prisma/client';
 import { FilteredRequest } from '@/types/request.type';
 import { TodoStatus } from '@/enums/todo-status.enum';
@@ -40,28 +41,26 @@ export const filtersMiddleware = (
 
 	(req as FilteredRequest).filters = filters;
 
-	const pagination = {} as { skip?: number; take?: number };
-
 	const defaultLimit = 5;
 
-	let page = 1;
-	if (typeof query.page === 'string') {
-		const parsedPage = parseInt(query.page, 10);
-		if (!isNaN(parsedPage) && parsedPage > 0) {
-			page = parsedPage;
+	const parsePositiveInt = (
+		value: ParsedQs[string],
+		defaultValue: number,
+	): number => {
+		if (typeof value == 'string') {
+			const parsed = parseInt(value, 10);
+			return !isNaN(parsed) && parsed > 0 ? parsed : defaultValue;
 		}
-	}
+		return defaultValue;
+	};
 
-	let limit = defaultLimit;
-	if (typeof query.limit === 'string') {
-		const parsedLimit = parseInt(query.limit, 10);
-		if (!isNaN(parsedLimit) && parsedLimit > 0) {
-			limit = parsedLimit;
-		}
-	}
+	const page = parsePositiveInt(query.page, 1);
+	const limit = parsePositiveInt(query.limit, defaultLimit);
 
-	pagination.skip = (page - 1) * limit;
-	pagination.take = limit;
+	const pagination = {
+		skip: (page - 1) * limit,
+		take: limit,
+	};
 
 	(req as FilteredRequest).pagination = pagination;
 
